@@ -1,27 +1,50 @@
 package com.bytepair.ketokodex;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.bytepair.ketokodex.fragments.SignInOutFragment;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import timber.log.Timber;
+import timber.log.Timber.DebugTree;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+
+    @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        ButterKnife.bind(this);
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new DebugTree());
+        }
+
+        setSupportActionBar(mToolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -32,11 +55,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
+        enableNavigationToggle();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -47,6 +66,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
         }
@@ -76,26 +97,111 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        Class fragmentClass = null;
+        switch (id) {
+            case R.id.nav_restaurants:
+                Timber.i("clicked nav restaurants...");
+                break;
+            case R.id.nav_favorites:
+                Timber.i("clicked nav favorites...");
+                break;
+            case R.id.nav_map:
+                Timber.i("clicked nav map...");
+                break;
+            case R.id.nav_add:
+                Timber.i("clicked nav add...");
+                break;
+            case R.id.nav_calculator:
+                Timber.i("clicked nav calculator...");
+                break;
+            case R.id.nav_sign_in_out:
+                fragmentClass = SignInOutFragment.class;
+                Timber.i("clicked nav sign in/out...");
+                break;
+            default:
+                Timber.i("default map...");
         }
+
+        swapFragment(fragmentClass);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void swapFragment(Class fragmentClass) {
+        Fragment fragment = null;
+
+        // get instance of the fragment
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (IllegalAccessException | InstantiationException e) {
+            Timber.e(e);
+        }
+
+        // swap fragment
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+    }
+
+    /**
+     * Used to show back button and enable the user to navigate between fragments
+     */
+    public void enableBackNavigation() {
+        // show the back button
+        showBackButton();
+        // lock navigation drawer so it can't be swiped open
+        if (mDrawerLayout != null) {
+            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        }
+        // add listener for the now displayed back button
+        if (mToolbar != null) {
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onBackPressed();
+                }
+            });
+        }
+    }
+
+    private void showBackButton() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    /**
+     * Used to show navigation menu toggle icon
+     * Can be called from fragments to help with navigation
+     */
+    public void enableNavigationToggle() {
+        hideBackButton();
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    private void hideBackButton() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+    }
+
+    /**
+     * Used by fragments to set the title
+     *
+     * @param title New title on action bar
+     */
+    public void setActionBarTitle(String title) {
+        getSupportActionBar().setTitle(title);
     }
 }
