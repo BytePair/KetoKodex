@@ -1,5 +1,6 @@
 package com.bytepair.ketokodex;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,8 +17,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
-import com.bytepair.ketokodex.fragments.SignInOutFragment;
+import com.bytepair.ketokodex.fragments.SignOutFragment;
+import com.bytepair.ketokodex.fragments.SignUpFragment;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +43,13 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
+    @BindView(R.id.nav_view)
+    NavigationView mNavigationView;
+
+    private Class mAuthFragmentClass;
+    private GoogleSignInClient mGoogleSignInClient;
+    private static final int RC_SIGN_IN = 2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(mToolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,14 +73,23 @@ public class MainActivity extends AppCompatActivity
         });
 
         enableNavigationToggle();
+        setUpGoogleSignIn();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        updateUI(account);
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
@@ -118,8 +144,8 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_calculator:
                 Timber.i("clicked nav calculator...");
                 break;
-            case R.id.nav_sign_in_out:
-                fragmentClass = SignInOutFragment.class;
+            case R.id.nav_sign_up:
+                fragmentClass = mAuthFragmentClass;
                 Timber.i("clicked nav sign in/out...");
                 break;
             default:
@@ -128,7 +154,7 @@ public class MainActivity extends AppCompatActivity
 
         swapFragment(fragmentClass);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -202,6 +228,87 @@ public class MainActivity extends AppCompatActivity
      * @param title New title on action bar
      */
     public void setActionBarTitle(String title) {
-        getSupportActionBar().setTitle(title);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
+    private void setUpGoogleSignIn() {
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    public void googleSignIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    public void googleSignOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        updateUI(null);
+                        while (getSupportFragmentManager().getBackStackEntryCount() > 0){
+                            getSupportFragmentManager().popBackStackImmediate();
+                        }
+                        Snackbar.make(mNavigationView, R.string.signed_out, Snackbar.LENGTH_LONG).show();
+                        onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_sign_up));
+                    }
+                });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...)
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+            while (getSupportFragmentManager().getBackStackEntryCount() > 0){
+                getSupportFragmentManager().popBackStackImmediate();
+            }
+            Snackbar.make(mNavigationView, R.string.signed_in, Snackbar.LENGTH_LONG).show();
+            onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_sign_up));
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Timber.w("signInResult:failed code=%s", e.getStatusCode());
+            Snackbar.make(mNavigationView, R.string.error_google_sign_in, Snackbar.LENGTH_LONG).show();
+            updateUI(null);
+        }
+    }
+
+    /**
+     * Updates the sign in/out UI. Will set the title text in the navigation drawer and change
+     * the fragment that is launched when selected
+     * @param account
+     */
+    private void updateUI(GoogleSignInAccount account) {
+        if (account == null) {
+            Toast.makeText(this, "No account found", Toast.LENGTH_LONG).show();
+            mNavigationView.getMenu().findItem(R.id.nav_sign_up).setTitle(R.string.sign_up);
+            mAuthFragmentClass = SignUpFragment.class;
+        } else {
+            Toast.makeText(this, "Account found: " + account.getEmail(), Toast.LENGTH_LONG).show();
+            mNavigationView.getMenu().findItem(R.id.nav_sign_up).setTitle(R.string.sign_out);
+            mAuthFragmentClass = SignOutFragment.class;
+        }
     }
 }
