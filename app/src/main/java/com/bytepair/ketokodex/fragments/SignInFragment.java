@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +104,19 @@ public class SignInFragment extends Fragment {
         mGoogleRegisterButton.setSize(SignInButton.SIZE_WIDE);
     }
 
+    void forgotPassword() {
+        Timber.i("forgot password clicked");
+        try {
+            MainActivity mainActivity = ((MainActivity) getActivity());
+            if (mainActivity != null) {
+                FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
+                fragmentManager.beginTransaction().addToBackStack(SignInFragment.class.getSimpleName()).replace(R.id.main_content, ForgotPasswordFragment.class.newInstance()).commit();
+            }
+        } catch (IllegalAccessException | java.lang.InstantiationException e) {
+            Timber.e(e);
+        }
+    }
+
     private void signIn() {
         Timber.i("sign in clicked");
     }
@@ -112,9 +126,5 @@ public class SignInFragment extends Fragment {
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).googleSignIn();
         }
-    }
-
-    private void forgotPassword() {
-        Timber.i("forgot password clicked");
     }
 }

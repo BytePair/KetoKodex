@@ -17,12 +17,17 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="forgot_password">Forgot Password?</string>
+    <string name="reset_password">Reset Password</string>
     <string name="already_registered_sign_in">Already Registered? Sign In</string>
     <string name="password">Password</string>
-    <string name="email_or_username">Email or Username</string>
+    <string name="email_or_username">Email</string>
     <string name="register">Register</string>
     <string name="or">- OR -</string>
     <string name="signed_out">Signed Out!</string>
     <string name="signed_in">Signed In!</string>
     <string name="error_google_sign_in">Error with Google sign in.</string>
+    <string name="caps_ok">OK</string>
+    <string name="password_reset_message">If an account exists for the specified email, you should receive an email shortly to reset your password.</string>
+    <string name="password_reset_title">Password Reset Sent</string>
+    <string name="password_reset_blank_email_message">Please enter an email address.</string>
 </resources>

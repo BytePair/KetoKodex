@@ -298,6 +298,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Updates the sign in/out UI. Will set the title text in the navigation drawer and change
      * the fragment that is launched when selected
+     *
      * @param account
      */
     private void updateUI(GoogleSignInAccount account) {
