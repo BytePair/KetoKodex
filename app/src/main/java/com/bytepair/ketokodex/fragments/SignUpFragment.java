@@ -2,17 +2,26 @@ package com.bytepair.ketokodex.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +42,13 @@ public class SignUpFragment extends Fragment {
     @BindView(R.id.sign_in_link)
     TextView mSignInLink;
 
+    @BindView(R.id.sign_up_username_input_edit_text)
+    TextInputEditText mEmailInput;
+
+    @BindView(R.id.sign_up_password_input_edit_text)
+    TextInputEditText mPasswordInput;
+
+    private FirebaseAuth mFirebaseAuth;
     private Unbinder mUnbinder;
 
     public SignUpFragment() {
@@ -46,6 +62,7 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
         mUnbinder = ButterKnife.bind(this, view);
 
+        mFirebaseAuth = FirebaseAuth.getInstance();
         setUpToolbar();
         setUpGoogleButton();
 
@@ -91,7 +108,7 @@ public class SignUpFragment extends Fragment {
         mGoogleRegisterButton.setSize(SignInButton.SIZE_WIDE);
     }
 
-    void showSignIn() {
+    private void showSignIn() {
         Timber.i("sign in clicked");
         try {
             MainActivity mainActivity = ((MainActivity) getActivity());
@@ -104,11 +121,16 @@ public class SignUpFragment extends Fragment {
         }
     }
 
-    void signUp() {
+    private void signUp() {
         Timber.i("sign up clicked");
+        String email = (mEmailInput.getText() == null) ? null : mEmailInput.getText().toString();
+        String password = (mPasswordInput.getText() == null) ? null : mPasswordInput.getText().toString();
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).emailSignUp(email, password);
+        }
     }
 
-    void googleSignUp() {
+    private void googleSignUp() {
         Timber.i("google sign in clicked");
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).googleSignIn();

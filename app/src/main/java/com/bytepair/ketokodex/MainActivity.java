@@ -14,6 +14,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +29,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     NavigationView mNavigationView;
 
     private Class mAuthFragmentClass;
+    private FirebaseAuth mFirebaseAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 2;
 
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity
             Timber.plant(new DebugTree());
         }
 
+        mFirebaseAuth = FirebaseAuth.getInstance();
         setSupportActionBar(mToolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -254,7 +260,7 @@ public class MainActivity extends AppCompatActivity
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
+                        updateUI((GoogleSignInAccount) null);
                         while (getSupportFragmentManager().getBackStackEntryCount() > 0){
                             getSupportFragmentManager().popBackStackImmediate();
                         }
@@ -291,7 +297,7 @@ public class MainActivity extends AppCompatActivity
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Timber.w("signInResult:failed code=%s", e.getStatusCode());
             Snackbar.make(mNavigationView, R.string.error_google_sign_in, Snackbar.LENGTH_LONG).show();
-            updateUI(null);
+            updateUI((GoogleSignInAccount) null);
         }
     }
 
@@ -299,7 +305,7 @@ public class MainActivity extends AppCompatActivity
      * Updates the sign in/out UI. Will set the title text in the navigation drawer and change
      * the fragment that is launched when selected
      *
-     * @param account
+     * @param account   GoogleSignInAccount
      */
     private void updateUI(GoogleSignInAccount account) {
         if (account == null) {
@@ -311,5 +317,56 @@ public class MainActivity extends AppCompatActivity
             mNavigationView.getMenu().findItem(R.id.nav_sign_up).setTitle(R.string.sign_out);
             mAuthFragmentClass = SignOutFragment.class;
         }
+    }
+
+    /**
+     * Updates the sign in/out UI. Will set the title text in the navigation drawer and change
+     * the fragment that is launched when selected
+     *
+     * @param account   FirebaseUser (username/password)
+     */
+    private void updateUI(FirebaseUser account) {
+        if (account == null) {
+            Toast.makeText(this, "No account found", Toast.LENGTH_LONG).show();
+            mNavigationView.getMenu().findItem(R.id.nav_sign_up).setTitle(R.string.sign_up);
+            mAuthFragmentClass = SignUpFragment.class;
+        } else {
+            Toast.makeText(this, "Account found: " + account.getEmail(), Toast.LENGTH_LONG).show();
+            mNavigationView.getMenu().findItem(R.id.nav_sign_up).setTitle(R.string.sign_out);
+            mAuthFragmentClass = SignOutFragment.class;
+        }
+    }
+
+    public void emailSignUp(String email, String password) {
+        if (email == null || email.length() < 1) {
+            Snackbar.make(mDrawerLayout, "Email address required", Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        if (password == null || password.length() < 1) {
+            Snackbar.make(mDrawerLayout, "Password required", Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Timber.d("createUserWithEmail:success");
+                            FirebaseUser user = mFirebaseAuth.getCurrentUser();
+                            updateUI(user);
+                            while (getSupportFragmentManager().getBackStackEntryCount() > 0){
+                                getSupportFragmentManager().popBackStackImmediate();
+                            }
+                            Snackbar.make(mNavigationView, R.string.signed_in, Snackbar.LENGTH_LONG).show();
+                            onNavigationItemSelected(mNavigationView.getMenu().findItem(R.id.nav_sign_up));
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Timber.w(task.getException(), "createUserWithEmail:failure");
+                            Snackbar.make(mDrawerLayout, task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
+                            updateUI((FirebaseUser) null);
+                        }
+                    }
+                });
     }
 }
