@@ -1,5 +1,6 @@
 package com.bytepair.ketokodex.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -16,17 +17,26 @@ import android.widget.Toast;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,7 +58,7 @@ public class SignUpFragment extends Fragment {
     @BindView(R.id.sign_up_password_input_edit_text)
     TextInputEditText mPasswordInput;
 
-    private FirebaseAuth mFirebaseAuth;
+    private GoogleSignInClient mGoogleSignInClient;
     private Unbinder mUnbinder;
 
     public SignUpFragment() {
@@ -62,7 +72,6 @@ public class SignUpFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
         mUnbinder = ButterKnife.bind(this, view);
 
-        mFirebaseAuth = FirebaseAuth.getInstance();
         setUpToolbar();
         setUpGoogleButton();
 

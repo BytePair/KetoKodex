@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,6 +44,12 @@ public class SignInFragment extends Fragment {
 
     @BindView(R.id.forgot_password_link)
     TextView mForgotPasswordLink;
+
+    @BindView(R.id.sign_in_email_input_edit_text)
+    TextInputEditText mEmailInput;
+
+    @BindView(R.id.sign_in_password_input_edit_text)
+    TextInputEditText mPasswordInput;
 
     private Unbinder mUnbinder;
 
@@ -119,6 +126,12 @@ public class SignInFragment extends Fragment {
 
     private void signIn() {
         Timber.i("sign in clicked");
+        Timber.i("sign up clicked");
+        String email = (mEmailInput.getText() == null) ? null : mEmailInput.getText().toString();
+        String password = (mPasswordInput.getText() == null) ? null : mPasswordInput.getText().toString();
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).emailSignIn(email, password);
+        }
     }
 
     private void googleSignIn() {

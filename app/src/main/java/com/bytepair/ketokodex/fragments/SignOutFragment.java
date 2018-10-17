@@ -13,6 +13,8 @@ import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,9 +74,9 @@ public class SignOutFragment extends Fragment {
     }
 
     private void setUserDetails() {
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(getContext());
-        if (account != null) {
-            mEmailTextView.setText(account.getEmail());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            mEmailTextView.setText(user.getEmail());
         } else {
             mEmailTextView.setText("No email address found");
         }
@@ -83,7 +85,7 @@ public class SignOutFragment extends Fragment {
     private void signOut() {
         Timber.i("sign out clicked");
         if (getActivity() instanceof MainActivity) {
-            ((MainActivity) getActivity()).googleSignOut();
+            ((MainActivity) getActivity()).signOut();
         }
     }
 
