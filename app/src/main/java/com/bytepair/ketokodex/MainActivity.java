@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bytepair.ketokodex.fragments.RestaurantFragment;
 import com.bytepair.ketokodex.fragments.SignOutFragment;
 import com.bytepair.ketokodex.fragments.SignUpFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -137,6 +138,7 @@ public class MainActivity extends AppCompatActivity
         Class fragmentClass = null;
         switch (id) {
             case R.id.nav_restaurants:
+                fragmentClass = RestaurantFragment.class;
                 Timber.i("clicked nav restaurants...");
                 break;
             case R.id.nav_favorites:
