@@ -77,6 +77,8 @@ public class RestaurantFragment extends Fragment {
                 .setQuery(query, Restaurant.class)
                 .build();
         mAdapter = new RestaurantAdapter(options);
+
+        // set layout manager on recycler view
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
 
