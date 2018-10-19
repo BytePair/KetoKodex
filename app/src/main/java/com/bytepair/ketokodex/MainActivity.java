@@ -18,11 +18,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
-import com.bytepair.ketokodex.fragments.RestaurantFragment;
-import com.bytepair.ketokodex.fragments.SignOutFragment;
-import com.bytepair.ketokodex.fragments.SignUpFragment;
+import com.bytepair.ketokodex.views.authentication.SignOutFragment;
+import com.bytepair.ketokodex.views.authentication.SignUpFragment;
+import com.bytepair.ketokodex.views.restaurants.RestaurantFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

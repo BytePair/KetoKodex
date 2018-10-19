@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.SignOutFragment">
+    tools:context=".views.authentication.SignOutFragment">
 
     <TextView
         android:id="@+id/email_text_view"

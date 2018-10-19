@@ -1,4 +1,4 @@
-package com.bytepair.ketokodex.fragments;
+package com.bytepair.ketokodex.views.authentication;
 
 
 import android.os.Bundle;
@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
