@@ -9,12 +9,16 @@ import android.widget.Toast;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Food;
 import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.bytepair.ketokodex.views.restaurants.RestaurantsHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class RestaurantAdapter extends FirestoreRecyclerAdapter<Food, RestaurantHolder> {
+
+    private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
+
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
@@ -28,8 +32,16 @@ public class RestaurantAdapter extends FirestoreRecyclerAdapter<Food, Restaurant
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull RestaurantHolder holder, int position, @NonNull Food model) {
+    protected void onBindViewHolder(@NonNull final RestaurantHolder holder, int position, @NonNull Food model) {
         holder.getFoodNameView().setText(model.getName());
+        holder.getCardView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mOnRecyclerViewClickListener != null) {
+                    mOnRecyclerViewClickListener.onItemClick(holder.getAdapterPosition(), view, getSnapshots().getSnapshot(holder.getAdapterPosition()).getId());
+                }
+            }
+        });
     }
 
     @NonNull
@@ -56,5 +68,9 @@ public class RestaurantAdapter extends FirestoreRecyclerAdapter<Food, Restaurant
     @Override
     public void onError(@NonNull FirebaseFirestoreException e) {
         super.onError(e);
+    }
+
+    public void setOnRecyclerViewClickListener(OnRecyclerViewClickListener onRecyclerViewClickListener) {
+        this.mOnRecyclerViewClickListener = onRecyclerViewClickListener;
     }
 }

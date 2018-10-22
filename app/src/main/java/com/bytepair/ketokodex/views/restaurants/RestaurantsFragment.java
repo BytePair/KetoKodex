@@ -37,7 +37,7 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
     @BindView(R.id.restaurant_recycler_view)
     RecyclerView mRecyclerView;
 
-    FirestoreRecyclerAdapter mAdapter;
+    RestaurantsAdapter mAdapter;
     private Unbinder mUnbinder;
 
     public RestaurantsFragment() {
@@ -84,7 +84,7 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
                 .setQuery(query, Restaurant.class)
                 .build();
         mAdapter = new RestaurantsAdapter(options);
-        ((RestaurantsAdapter) mAdapter).setOnRecyclerViewClickListener(this);
+        mAdapter.setOnRecyclerViewClickListener(this);
 
         // set layout manager on recycler view
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
