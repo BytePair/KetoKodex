@@ -11,6 +11,6 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="@dimen/nav_header_vertical_spacing"
-        tools:listitem="@layout/food_list_item" />
+        tools:listitem="@layout/restaurant_list_item" />
 
 </FrameLayout>

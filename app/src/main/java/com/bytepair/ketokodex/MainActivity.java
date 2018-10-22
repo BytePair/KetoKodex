@@ -21,7 +21,7 @@ import android.view.View;
 
 import com.bytepair.ketokodex.views.authentication.SignOutFragment;
 import com.bytepair.ketokodex.views.authentication.SignUpFragment;
-import com.bytepair.ketokodex.views.restaurants.RestaurantFragment;
+import com.bytepair.ketokodex.views.restaurants.RestaurantsFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity
         Class fragmentClass = null;
         switch (id) {
             case R.id.nav_restaurants:
-                fragmentClass = RestaurantFragment.class;
+                fragmentClass = RestaurantsFragment.class;
                 Timber.i("clicked nav restaurants...");
                 break;
             case R.id.nav_favorites:

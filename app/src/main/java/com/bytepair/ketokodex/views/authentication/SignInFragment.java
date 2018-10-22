@@ -106,7 +106,7 @@ public class SignInFragment extends Fragment {
             MainActivity mainActivity = ((MainActivity) getActivity());
             if (mainActivity != null) {
                 FragmentManager fragmentManager = mainActivity.getSupportFragmentManager();
-                fragmentManager.beginTransaction().addToBackStack(SignInFragment.class.getSimpleName()).replace(R.id.main_content, ForgotPasswordFragment.class.newInstance()).commit();
+                fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.main_content, ForgotPasswordFragment.class.newInstance()).commit();
             }
         } catch (IllegalAccessException | java.lang.InstantiationException e) {
             Timber.e(e);

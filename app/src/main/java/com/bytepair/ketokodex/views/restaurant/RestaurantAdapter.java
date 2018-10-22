@@ -1,17 +1,20 @@
-package com.bytepair.ketokodex.views.restaurants;
+package com.bytepair.ketokodex.views.restaurant;
 
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bytepair.ketokodex.R;
+import com.bytepair.ketokodex.models.Food;
 import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.views.restaurants.RestaurantsHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-public class RestaurantAdapter extends FirestoreRecyclerAdapter<Restaurant, RestaurantHolder> {
+public class RestaurantAdapter extends FirestoreRecyclerAdapter<Food, RestaurantHolder> {
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
      * FirestoreRecyclerOptions} for configuration options.
@@ -20,19 +23,19 @@ public class RestaurantAdapter extends FirestoreRecyclerAdapter<Restaurant, Rest
      *
      * @param options
      */
-    public RestaurantAdapter(@NonNull FirestoreRecyclerOptions<Restaurant> options) {
+    public RestaurantAdapter(@NonNull FirestoreRecyclerOptions<Food> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull RestaurantHolder holder, int position, @NonNull Restaurant model) {
-        holder.getRestaurantNameView().setText(model.getName());
+    protected void onBindViewHolder(@NonNull RestaurantHolder holder, int position, @NonNull Food model) {
+        holder.getFoodNameView().setText(model.getName());
     }
 
     @NonNull
     @Override
-    public RestaurantHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.restaurant_list_item, viewGroup, false);
+    public RestaurantHolder onCreateViewHolder(@NonNull final ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.food_list_item, viewGroup, false);
         return new RestaurantHolder(view);
     }
 
