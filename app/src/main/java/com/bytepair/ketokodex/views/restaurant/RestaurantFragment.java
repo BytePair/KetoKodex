@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
+import static com.bytepair.ketokodex.models.Food.FOOD_KEY;
 import static com.bytepair.ketokodex.views.FoodFragment.FOOD_ID;
 import static com.bytepair.ketokodex.views.FoodFragment.FOOD_NAME;
 
@@ -93,7 +94,7 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
 
         // build query
         Query query = FirebaseFirestore.getInstance()
-                .collection("foods")
+                .collection(FOOD_KEY)
                 .whereEqualTo("restaurantId", mRestaurantId)
                 .orderBy("name");
 

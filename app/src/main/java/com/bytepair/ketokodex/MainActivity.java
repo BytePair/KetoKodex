@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.bytepair.ketokodex.views.addfood.AddFoodFragment;
 import com.bytepair.ketokodex.views.authentication.SignOutFragment;
 import com.bytepair.ketokodex.views.authentication.SignUpFragment;
 import com.bytepair.ketokodex.views.restaurants.RestaurantsFragment;
@@ -147,7 +148,8 @@ public class MainActivity extends AppCompatActivity
                 Timber.i("clicked nav map...");
                 break;
             case R.id.nav_add:
-                Timber.i("clicked nav add...");
+                fragmentClass = AddFoodFragment.class;
+                Timber.i("clicked nav add food...");
                 break;
             case R.id.nav_calculator:
                 Timber.i("clicked nav calculator...");

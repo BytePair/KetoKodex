@@ -32,6 +32,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
+import static com.bytepair.ketokodex.models.Food.FOOD_KEY;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -108,7 +110,7 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
         }
 
         FirebaseFirestore.getInstance()
-                .collection("foods")
+                .collection(FOOD_KEY)
                 .document(mFoodId)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
