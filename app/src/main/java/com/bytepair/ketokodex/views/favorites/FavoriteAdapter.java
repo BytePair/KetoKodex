@@ -13,7 +13,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, RestaurantHolder> {
+public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, FavoriteHolder> {
 
     private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
 
@@ -30,7 +30,8 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Restaura
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final RestaurantHolder holder, int position, @NonNull Favorite model) {
+    protected void onBindViewHolder(@NonNull final FavoriteHolder holder, int position, @NonNull Favorite model) {
+        holder.getRestaurantNameView().setText(model.getRestaurantName());
         holder.getFoodNameView().setText(model.getName());
         holder.getCardView().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,9 +45,9 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Restaura
 
     @NonNull
     @Override
-    public RestaurantHolder onCreateViewHolder(@NonNull final ViewGroup viewGroup, int i) {
+    public FavoriteHolder onCreateViewHolder(@NonNull final ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.favorite_list_item, viewGroup, false);
-        return new RestaurantHolder(view);
+        return new FavoriteHolder(view);
     }
 
     /**

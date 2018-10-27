@@ -1,14 +1,25 @@
 package com.bytepair.ketokodex.models;
 
-public class Favorite extends Food {
+import java.io.Serializable;
 
-    private String restaurant;
+public class Favorite extends Food implements Serializable {
 
-    public String getRestaurant() {
-        return restaurant;
+    private String restaurantName;
+    private String foodId;
+
+    public String getRestaurantName() {
+        return restaurantName;
     }
 
-    public void setRestaurant(String restaurant) {
-        this.restaurant = restaurant;
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
+    public String getFoodId() {
+        return foodId;
+    }
+
+    public void setFoodId(String foodId) {
+        this.foodId = foodId;
     }
 }

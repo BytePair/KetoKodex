@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Favorite;
-import com.bytepair.ketokodex.views.FoodFragment;
+import com.bytepair.ketokodex.views.food.FoodFragment;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,6 +25,9 @@ import butterknife.Unbinder;
 import timber.log.Timber;
 
 import static com.bytepair.ketokodex.helpers.Constants.FAVORITES_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.FOOD_ID;
+import static com.bytepair.ketokodex.helpers.Constants.FOOD_NAME;
+import static com.bytepair.ketokodex.helpers.Constants.RESTAURANT_NAME;
 import static com.bytepair.ketokodex.helpers.Constants.RESTAURANT_NAME_KEY;
 import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 
@@ -51,9 +54,11 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
         } else {
             view = inflater.inflate(R.layout.fragment_favorites, container, false);
             mRecyclerView = view.findViewById(R.id.favorites_recycler_view);
+            getFavorites();
         }
 
         mUnbinder = ButterKnife.bind(this, view);
+
         hideFab();
         setUpToolbar();
 
@@ -75,7 +80,6 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
     }
 
     private void getFavorites() {
-
         // build query
         Query query = FirebaseFirestore.getInstance()
                 .collection(FAVORITES_KEY)
@@ -98,12 +102,29 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (mAdapter != null) {
+            mAdapter.startListening();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAdapter != null) {
+            mAdapter.stopListening();
+        }
+    }
+
+    @Override
     public void onItemClick(int position, View view, String id) {
         Favorite favorite = mAdapter.getItem(position);
         Timber.d( "Clicked %s", favorite.getName());
         Bundle data = new Bundle();
-        data.putString("favorite_name", favorite.getName());
-        data.putString("favorite_id", id);
+        data.putString(RESTAURANT_NAME, favorite.getRestaurantName());
+        data.putString(FOOD_NAME, favorite.getName());
+        data.putString(FOOD_ID, favorite.getFoodId());
         Fragment fragment = new FoodFragment();
         fragment.setArguments(data);
         if (getActivity() instanceof MainActivity) {

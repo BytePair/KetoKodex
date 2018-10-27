@@ -1,7 +1,6 @@
 package com.bytepair.ketokodex.views.restaurant;
 
 
-import android.arch.lifecycle.Lifecycle;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -15,10 +14,11 @@ import android.view.ViewGroup;
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Food;
-import com.bytepair.ketokodex.views.FoodFragment;
+import com.bytepair.ketokodex.views.food.FoodFragment;
 import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -27,11 +27,13 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
+import static com.bytepair.ketokodex.helpers.Constants.CUSTOM_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.FOOD_ID;
 import static com.bytepair.ketokodex.helpers.Constants.FOOD_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.FOOD_NAME;
 import static com.bytepair.ketokodex.helpers.Constants.NAME_KEY;
 import static com.bytepair.ketokodex.helpers.Constants.RESTAURANT_KEY;
-import static com.bytepair.ketokodex.views.FoodFragment.FOOD_ID;
-import static com.bytepair.ketokodex.views.FoodFragment.FOOD_NAME;
+import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -95,10 +97,17 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
         }
 
         // build query
-        Query query = FirebaseFirestore.getInstance()
-                .collection(FOOD_KEY)
-                .whereEqualTo(RESTAURANT_KEY, mRestaurantId)
-                .orderBy(NAME_KEY);
+        Query query;
+        if (CUSTOM_KEY.equals(mRestaurantId)) {
+            // user should always be signed in to see custom meals
+            if (FirebaseAuth.getInstance().getUid() == null) {
+                showErrorScreen();
+                return;
+            }
+            query = getCustomFoodQuery();
+        } else {
+            query = getDefaultQuery();
+        }
 
         // configure adapter
         FirestoreRecyclerOptions<Food> options = new FirestoreRecyclerOptions.Builder<Food>()
@@ -128,15 +137,11 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
     }
 
     @Override
-    public Lifecycle getLifecycle() {
-        return super.getLifecycle();
-    }
-
-    @Override
     public void onItemClick(int position, View view, String id) {
         Food food = (Food) mAdapter.getItem(position);
         Timber.d( "Clicked %s", food.getName());
         Bundle data = new Bundle();
+        data.putString(RESTAURANT_NAME, mRestaurantName);
         data.putString(FOOD_NAME, food.getName());
         data.putString(FOOD_ID, id);
         Fragment fragment = new FoodFragment();
@@ -154,6 +159,21 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    private Query getCustomFoodQuery() {
+        return FirebaseFirestore.getInstance()
+                .collection(FOOD_KEY)
+                .whereEqualTo(RESTAURANT_KEY, mRestaurantId)
+                .whereEqualTo(USER_ID_KEY, FirebaseAuth.getInstance().getUid())
+                .orderBy(NAME_KEY);
+    }
+
+    private Query getDefaultQuery() {
+        return FirebaseFirestore.getInstance()
+                .collection(FOOD_KEY)
+                .whereEqualTo(RESTAURANT_KEY, mRestaurantId)
+                .orderBy(NAME_KEY);
     }
 
     @Override

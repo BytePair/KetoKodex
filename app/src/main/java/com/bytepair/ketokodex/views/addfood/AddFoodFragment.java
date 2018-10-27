@@ -62,14 +62,15 @@ public class AddFoodFragment extends Fragment {
         View view;
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             view = inflater.inflate(R.layout.fragment_add_food_please_sign_in, container, false);
+            hideFab();
         } else {
             view = inflater.inflate(R.layout.fragment_add_food, container, false);
             bindViews(view);
+            setUpFab();
         }
         mUnbinder = ButterKnife.bind(this, view);
 
         setUpToolbar();
-        setUpFab();
 
         return view;
     }
@@ -175,5 +176,14 @@ public class AddFoodFragment extends Fragment {
         mCarbsEditText = view.findViewById(R.id.carbs_edit_text);
         mProteinEditText = view.findViewById(R.id.protein_edit_text);
         mFatEditText = view.findViewById(R.id.fat_edit_text);
+    }
+
+    private void hideFab() {
+        if (getActivity() instanceof MainActivity) {
+            View view = getActivity().findViewById(R.id.fab);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
+        }
     }
 }

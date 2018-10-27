@@ -22,6 +22,10 @@ public class FavoriteHolder extends RecyclerView.ViewHolder {
         cardView = itemView.findViewById(R.id.food_card_view);
     }
 
+    public TextView getRestaurantNameView() {
+        return restaurantNameView;
+    }
+
     public TextView getFoodNameView() {
         return foodNameView;
     }
