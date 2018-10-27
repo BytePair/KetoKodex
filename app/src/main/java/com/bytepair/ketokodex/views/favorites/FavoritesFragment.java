@@ -1,4 +1,4 @@
-package com.bytepair.ketokodex.views.restaurants;
+package com.bytepair.ketokodex.views.favorites;
 
 
 import android.os.Bundle;
@@ -12,47 +12,49 @@ import android.view.ViewGroup;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
-import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.models.Favorite;
+import com.bytepair.ketokodex.views.FoodFragment;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
-import com.bytepair.ketokodex.views.restaurant.RestaurantFragment;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
-import static com.bytepair.ketokodex.views.restaurant.RestaurantFragment.RESTAURANT_ID;
-import static com.bytepair.ketokodex.views.restaurant.RestaurantFragment.RESTAURANT_NAME;
+import static com.bytepair.ketokodex.helpers.Constants.FAVORITES_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.RESTAURANT_NAME_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RestaurantsFragment extends Fragment implements OnRecyclerViewClickListener {
+public class FavoritesFragment extends Fragment implements OnRecyclerViewClickListener {
 
-    @BindView(R.id.restaurant_recycler_view)
-    RecyclerView mRecyclerView;
-
-    private RestaurantsAdapter mAdapter;
+    private RecyclerView mRecyclerView;
+    private FavoriteAdapter mAdapter;
     private Unbinder mUnbinder;
 
-    public RestaurantsFragment() {
+    public FavoritesFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_restaurants, container, false);
-        mUnbinder = ButterKnife.bind(this, view);
+        // Inflate the layout for this fragment depending on if user is signed in or not
+        View view;
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            view = inflater.inflate(R.layout.fragment_favorites_please_sign_in, container, false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_favorites, container, false);
+            mRecyclerView = view.findViewById(R.id.favorites_recycler_view);
+        }
 
+        mUnbinder = ButterKnife.bind(this, view);
         setUpToolbar();
-        getRestaurants();
 
         return view;
     }
@@ -66,26 +68,24 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
     private void setUpToolbar() {
         if (getActivity() instanceof MainActivity) {
             final MainActivity mainActivity = ((MainActivity) getActivity());
-            mainActivity.setActionBarTitle(getString(R.string.restaurants));
+            mainActivity.setActionBarTitle(getString(R.string.favorites));
             mainActivity.enableNavigationToggle();
         }
     }
 
-    private void getRestaurants() {
+    private void getFavorites() {
 
         // build query
-        Query query;
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            query = getGeneralQuery();
-        } else {
-            query = getUserSpecificQuery();
-        }
+        Query query = FirebaseFirestore.getInstance()
+                .collection(FAVORITES_KEY)
+                .whereEqualTo(USER_ID_KEY, FirebaseAuth.getInstance().getUid())
+                .orderBy(RESTAURANT_NAME_KEY);
 
         // configure adapter
-        FirestoreRecyclerOptions<Restaurant> options = new FirestoreRecyclerOptions.Builder<Restaurant>()
-                .setQuery(query, Restaurant.class)
+        FirestoreRecyclerOptions<Favorite> options = new FirestoreRecyclerOptions.Builder<Favorite>()
+                .setQuery(query, Favorite.class)
                 .build();
-        mAdapter = new RestaurantsAdapter(options);
+        mAdapter = new FavoriteAdapter(options);
         mAdapter.setOnRecyclerViewClickListener(this);
 
         // set layout manager on recycler view
@@ -97,42 +97,17 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mAdapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mAdapter.stopListening();
-    }
-
-    @Override
     public void onItemClick(int position, View view, String id) {
-        Restaurant restaurant = mAdapter.getItem(position);
-        Timber.d( "Clicked %s", restaurant.getName());
+        Favorite favorite = mAdapter.getItem(position);
+        Timber.d( "Clicked %s", favorite.getName());
         Bundle data = new Bundle();
-        data.putString(RESTAURANT_NAME, restaurant.getName());
-        data.putString(RESTAURANT_ID, id);
-        Fragment fragment = new RestaurantFragment();
+        data.putString("favorite_name", favorite.getName());
+        data.putString("favorite_id", id);
+        Fragment fragment = new FoodFragment();
         fragment.setArguments(data);
         if (getActivity() instanceof MainActivity) {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.main_content, fragment).commit();
         }
-    }
-
-    private Query getUserSpecificQuery() {
-        return FirebaseFirestore.getInstance()
-                .collection("restaurants")
-                .orderBy("name");
-    }
-
-    private Query getGeneralQuery() {
-        return FirebaseFirestore.getInstance()
-                .collection("restaurants")
-                .orderBy("name")
-                .startAfter("-Custom-");
     }
 }

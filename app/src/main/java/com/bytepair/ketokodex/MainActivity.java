@@ -22,6 +22,7 @@ import android.view.View;
 import com.bytepair.ketokodex.views.addfood.AddFoodFragment;
 import com.bytepair.ketokodex.views.authentication.SignOutFragment;
 import com.bytepair.ketokodex.views.authentication.SignUpFragment;
+import com.bytepair.ketokodex.views.favorites.FavoritesFragment;
 import com.bytepair.ketokodex.views.restaurants.RestaurantsFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -142,6 +143,7 @@ public class MainActivity extends AppCompatActivity
                 Timber.i("clicked nav restaurants...");
                 break;
             case R.id.nav_favorites:
+                fragmentClass = FavoritesFragment.class;
                 Timber.i("clicked nav favorites...");
                 break;
             case R.id.nav_map:

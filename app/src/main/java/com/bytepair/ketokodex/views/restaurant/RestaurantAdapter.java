@@ -4,13 +4,10 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Food;
-import com.bytepair.ketokodex.models.Restaurant;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
-import com.bytepair.ketokodex.views.restaurants.RestaurantsHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;

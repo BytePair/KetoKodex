@@ -16,9 +16,8 @@ import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Food;
 import com.bytepair.ketokodex.views.FoodFragment;
-import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -28,7 +27,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
 
-import static com.bytepair.ketokodex.models.Food.FOOD_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.FOOD_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.NAME_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.RESTAURANT_KEY;
 import static com.bytepair.ketokodex.views.FoodFragment.FOOD_ID;
 import static com.bytepair.ketokodex.views.FoodFragment.FOOD_NAME;
 
@@ -95,8 +96,8 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
         // build query
         Query query = FirebaseFirestore.getInstance()
                 .collection(FOOD_KEY)
-                .whereEqualTo("restaurantId", mRestaurantId)
-                .orderBy("name");
+                .whereEqualTo(RESTAURANT_KEY, mRestaurantId)
+                .orderBy(NAME_KEY);
 
         // configure adapter
         FirestoreRecyclerOptions<Food> options = new FirestoreRecyclerOptions.Builder<Food>()

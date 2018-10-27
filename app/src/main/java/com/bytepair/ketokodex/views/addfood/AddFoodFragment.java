@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
-import com.bytepair.ketokodex.models.Food;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,35 +24,32 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-import static com.bytepair.ketokodex.models.Food.FOOD_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.CALORIES_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.CARBS_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.CUSTOM_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.DESCRIPTION_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.FAT_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.FOOD_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.NAME_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.PROTEIN_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.RESTAURANT_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AddFoodFragment extends Fragment {
 
-    private static final String CUSTOM_KEY = "7mYtbPQ5fjMEccqHvmJn";
     private Unbinder mUnbinder;
     private FloatingActionButton mFab;
-
-    @BindView(R.id.food_name_edit_text)
-    TextInputEditText mFoodNameEditText;
-
-    @BindView(R.id.calories_edit_text)
-    TextInputEditText mCaloriesEditText;
-
-    @BindView(R.id.carbs_edit_text)
-    TextInputEditText mCarbsEditText;
-
-    @BindView(R.id.protein_edit_text)
-    TextInputEditText mProteinEditText;
-
-    @BindView(R.id.fat_edit_text)
-    TextInputEditText mFatEditText;
+    private TextInputEditText mFoodNameEditText;
+    private TextInputEditText mCaloriesEditText;
+    private TextInputEditText mCarbsEditText;
+    private TextInputEditText mProteinEditText;
+    private TextInputEditText mFatEditText;
 
     public AddFoodFragment() {
         // Required empty public constructor
@@ -65,9 +61,10 @@ public class AddFoodFragment extends Fragment {
         // Inflate the layout for this fragment depending on if user is signed in or not
         View view;
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            view = inflater.inflate(R.layout.fragment_please_sign_in, container, false);
+            view = inflater.inflate(R.layout.fragment_add_food_please_sign_in, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_add_food, container, false);
+            bindViews(view);
         }
         mUnbinder = ButterKnife.bind(this, view);
 
@@ -135,14 +132,14 @@ public class AddFoodFragment extends Fragment {
 
                 // create object
                 Map<String, Object> customFood = new HashMap<>();
-                customFood.put(Food.RESTAURANT_KEY, CUSTOM_KEY);
-                customFood.put(Food.USER_ID_KEY, FirebaseAuth.getInstance().getCurrentUser().getUid());
-                customFood.put(Food.NAME_KEY, foodName);
-                customFood.put(Food.DESCRIPTION_KEY, foodName);
-                customFood.put(Food.CALORIES_KEY, calories);
-                customFood.put(Food.CARBS_KEY, carbs);
-                customFood.put(Food.PROTEIN_KEY, protein);
-                customFood.put(Food.FAT_KEY, fat);
+                customFood.put(RESTAURANT_KEY, CUSTOM_KEY);
+                customFood.put(USER_ID_KEY, FirebaseAuth.getInstance().getCurrentUser().getUid());
+                customFood.put(NAME_KEY, foodName);
+                customFood.put(DESCRIPTION_KEY, foodName);
+                customFood.put(CALORIES_KEY, calories);
+                customFood.put(CARBS_KEY, carbs);
+                customFood.put(PROTEIN_KEY, protein);
+                customFood.put(FAT_KEY, fat);
 
                 // save to firestore db
                 saveFood(customFood);
@@ -169,5 +166,13 @@ public class AddFoodFragment extends Fragment {
 
     private void showSnackbar(String message) {
         Snackbar.make(mFoodNameEditText, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void bindViews(View view) {
+        mFoodNameEditText = view.findViewById(R.id.food_name_edit_text);
+        mCaloriesEditText = view.findViewById(R.id.calories_edit_text);
+        mCarbsEditText = view.findViewById(R.id.carbs_edit_text);
+        mProteinEditText = view.findViewById(R.id.protein_edit_text);
+        mFatEditText = view.findViewById(R.id.fat_edit_text);
     }
 }

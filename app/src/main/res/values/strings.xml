@@ -34,5 +34,6 @@
     <string name="password_reset_title">Password Reset Sent</string>
     <string name="password_reset_blank_email_message">Please enter an email address.</string>
     <string name="unknown">Unknown</string>
-    <string name="please_sign_in">Please sign in to add custom foods</string>
+    <string name="add_food_please_sign_in">Please sign in to add custom foods</string>
+    <string name="favorites_please_sign_in">Please sign in to use favorites</string>
 </resources>

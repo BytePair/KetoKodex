@@ -1,4 +1,4 @@
-package com.bytepair.ketokodex.views.restaurants;
+package com.bytepair.ketokodex.views.favorites;
 
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -6,13 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bytepair.ketokodex.R;
-import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.models.Favorite;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
+import com.bytepair.ketokodex.views.restaurant.RestaurantHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
-public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, RestaurantsHolder> {
+public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, RestaurantHolder> {
 
     private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
 
@@ -24,13 +25,13 @@ public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, Res
      *
      * @param options
      */
-    public RestaurantsAdapter(@NonNull FirestoreRecyclerOptions<Restaurant> options) {
+    public FavoriteAdapter(@NonNull FirestoreRecyclerOptions<Favorite> options) {
         super(options);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final RestaurantsHolder holder, final int position, @NonNull Restaurant model) {
-        holder.getRestaurantNameView().setText(model.getName());
+    protected void onBindViewHolder(@NonNull final RestaurantHolder holder, int position, @NonNull Favorite model) {
+        holder.getFoodNameView().setText(model.getName());
         holder.getCardView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -43,9 +44,9 @@ public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, Res
 
     @NonNull
     @Override
-    public RestaurantsHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.restaurant_list_item, viewGroup, false);
-        return new RestaurantsHolder(view);
+    public RestaurantHolder onCreateViewHolder(@NonNull final ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.favorite_list_item, viewGroup, false);
+        return new RestaurantHolder(view);
     }
 
     /**
