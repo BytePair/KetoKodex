@@ -93,6 +93,7 @@ public class AddFoodFragment extends Fragment {
             return;
         }
         mFab = getActivity().findViewById(R.id.fab);
+        ((View) mFab).setVisibility(View.VISIBLE);
         mFab.setImageResource(R.drawable.ic_baseline_add);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFab.setColorFilter(getActivity().getColor(android.R.color.white));

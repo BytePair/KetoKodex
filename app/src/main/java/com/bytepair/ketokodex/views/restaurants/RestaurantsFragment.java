@@ -2,6 +2,7 @@ package com.bytepair.ketokodex.views.restaurants;
 
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -51,6 +52,7 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
         View view = inflater.inflate(R.layout.fragment_restaurants, container, false);
         mUnbinder = ButterKnife.bind(this, view);
 
+        hideFab();
         setUpToolbar();
         getRestaurants();
 
@@ -134,5 +136,14 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
                 .collection("restaurants")
                 .orderBy("name")
                 .startAfter("-Custom-");
+    }
+
+    private void hideFab() {
+        if (getActivity() instanceof MainActivity) {
+            View view = getActivity().findViewById(R.id.fab);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
+        }
     }
 }

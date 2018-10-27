@@ -65,6 +65,7 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
             mRestaurantId = getArguments().getString(RESTAURANT_ID);
         }
 
+        hideFab();
         setUpToolbar();
         getMenu();
 
@@ -143,6 +144,15 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
         if (getActivity() instanceof MainActivity) {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.main_content, fragment).commit();
+        }
+    }
+
+    private void hideFab() {
+        if (getActivity() instanceof MainActivity) {
+            View view = getActivity().findViewById(R.id.fab);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
         }
     }
 

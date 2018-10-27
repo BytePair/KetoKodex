@@ -55,6 +55,7 @@ public class SignInFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
         mUnbinder = ButterKnife.bind(this, view);
 
+        hideFab();
         setUpToolbar();
         setUpGoogleButton();
 
@@ -129,4 +130,14 @@ public class SignInFragment extends Fragment {
             ((MainActivity) getActivity()).googleSignIn();
         }
     }
+
+    private void hideFab() {
+        if (getActivity() instanceof MainActivity) {
+            View view = getActivity().findViewById(R.id.fab);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
+        }
+    }
+
 }

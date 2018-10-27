@@ -54,6 +54,7 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
         }
 
         mUnbinder = ButterKnife.bind(this, view);
+        hideFab();
         setUpToolbar();
 
         return view;
@@ -108,6 +109,15 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
         if (getActivity() instanceof MainActivity) {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.main_content, fragment).commit();
+        }
+    }
+
+    private void hideFab() {
+        if (getActivity() instanceof MainActivity) {
+            View view = getActivity().findViewById(R.id.fab);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
         }
     }
 }

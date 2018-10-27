@@ -46,6 +46,8 @@ public class ForgotPasswordFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
         mUnbinder = ButterKnife.bind(this, view);
+
+        hideFab();
         setUpToolbar();
 
         mResetPasswordButton.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +90,15 @@ public class ForgotPasswordFragment extends Fragment {
                     });
         } else {
             Snackbar.make(getView(), R.string.password_reset_blank_email_message, Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    private void hideFab() {
+        if (getActivity() instanceof MainActivity) {
+            View view = getActivity().findViewById(R.id.fab);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
         }
     }
 }
