@@ -1,5 +1,7 @@
 package com.bytepair.ketokodex.views.authentication;
 
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
@@ -53,7 +55,12 @@ public class SignUpFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
+
         mUnbinder = ButterKnife.bind(this, view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity() != null) {
+            mRegisterButton.getBackground().setColorFilter(getActivity().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+            mRegisterButton.setTextColor(getActivity().getColor(android.R.color.white));
+        }
 
         hideFab();
         setUpToolbar();

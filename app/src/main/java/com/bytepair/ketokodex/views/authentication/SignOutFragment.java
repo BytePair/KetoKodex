@@ -1,6 +1,8 @@
 package com.bytepair.ketokodex.views.authentication;
 
 
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -42,7 +44,12 @@ public class SignOutFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sign_out, container, false);
+
         mUnbinder = ButterKnife.bind(this, view);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity() != null) {
+            mSignOutButton.getBackground().setColorFilter(getActivity().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+            mSignOutButton.setTextColor(getActivity().getColor(android.R.color.white));
+        }
 
         hideFab();
         setUpToolbar();
