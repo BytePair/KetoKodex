@@ -1,0 +1,6 @@
+
+ysquid:S2637”"aParameter 2 to this call is marked "android.support.annotation.NonNull" but null could be passed.(š¨Í™
+Msquid:S19051"7Remove this unnecessary cast to "FloatingActionButton".(–“€G
+Msquid:S1905<"1Remove this unnecessary cast to "NavigationView".(üûÍøÿÿÿÿ
+Ksquid:S1905B"/Remove this unnecessary cast to "DrawerLayout".(ÐÍè¨þÿÿÿÿ
+Lsquid:S1905ƒ"/Remove this unnecessary cast to "DrawerLayout".(ÐÍè¨þÿÿÿÿ
