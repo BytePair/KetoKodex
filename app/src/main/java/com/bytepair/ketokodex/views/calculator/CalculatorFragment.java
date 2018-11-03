@@ -1,7 +1,6 @@
 package com.bytepair.ketokodex.views.calculator;
 
-
-import android.annotation.TargetApi;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,6 +21,7 @@ import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,7 +64,8 @@ public class CalculatorFragment extends Fragment {
             "Sedentary (Little or no exercise)",
             "Lightly Active (1-3 workouts/week)",
             "Moderately Active (3-5 workouts/week)",
-            "Very Active (6-7 workouts/week)"};
+            "Very Active (6-7 workouts/week)",
+            "Extra Active (Physical Job and 6-7 workouts/week)"};
     private Unbinder mUnbinder;
 
     public CalculatorFragment() {
@@ -89,8 +91,9 @@ public class CalculatorFragment extends Fragment {
         mCalculateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Integer calories = calculateCalories();
+                Integer calories = getCalories();
                 mCaloriesTextView.setText(calories == null ? "" : String.valueOf(calories));
+                mCaloriesTextView.setPaintFlags(mCaloriesTextView.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
             }
         });
 
@@ -126,9 +129,9 @@ public class CalculatorFragment extends Fragment {
         mActivityLevelSpinner.setAdapter(spinnerAdapter);
     }
 
-    private Integer calculateCalories() {
+    private Integer getCalories() {
         if (isInputValid()) {
-            return 2000;
+            return calculateCalories();
         }
         return null;
     }
@@ -140,7 +143,7 @@ public class CalculatorFragment extends Fragment {
             return false;
         }
         Integer age = Integer.valueOf(mAgeEditText.getText().toString());
-        if (age < 15 || age > 120) {
+        if (age < 1 || age > 120) {
             mAgeEditText.setError("Please enter valid age");
             return false;
         }
@@ -174,21 +177,66 @@ public class CalculatorFragment extends Fragment {
         return true;
     }
 
-
-    /*
-    Harris-Benedict Formula
-
-    1. Calculate your BMR (basal metabolic rate):
-
-        Women: BMR = 655 + ( 4.35 x weight in pounds ) + ( 4.7 x height in inches ) - ( 4.7 x age in years )
-        Men: BMR = 66 + ( 6.23 x weight in pounds ) + ( 12.7 x height in inches ) - ( 6.8 x age in years )
-
-    2. Multiply your BMR by the appropriate activity factor, as follows:
-
-       Sedentary (little or no exercise): BMR x 1.2
-       Lightly active (light exercise/sports 1-3 days/week): BMR x 1.375
-       Moderately active (moderate exercise/sports 3-5 days/week): BMR x 1.55
-       Very active (hard exercise/sports 6-7 days a week): BMR x 1.725
-       Extra active (very hard exercise/sports & physical job or 2x training): BMR x 1.9
+    /**
+     * Calculates calories using the Harris-Benedict Formula
+     *
+     *     1. Calculate your BMR (basal metabolic rate):
+     *
+     *         Women: BMR = 655 + ( 4.35 x weight in pounds ) + ( 4.7 x height in inches ) - ( 4.7 x age in years )
+     *         Men: BMR = 66 + ( 6.23 x weight in pounds ) + ( 12.7 x height in inches ) - ( 6.8 x age in years )
+     *
+     *     2. Multiply your BMR by the appropriate activity factor, as follows:
+     *
+     *        Sedentary (little or no exercise): BMR x 1.2
+     *        Lightly active (light exercise/sports 1-3 days/week): BMR x 1.375
+     *        Moderately active (moderate exercise/sports 3-5 days/week): BMR x 1.55
+     *        Very active (hard exercise/sports 6-7 days a week): BMR x 1.725
+     *        Extra active (very hard exercise/sports & physical job or 2x training): BMR x 1.9
      */
+    private Integer calculateCalories() {
+        // get age
+        Integer age = Integer.valueOf(Objects.requireNonNull(mAgeEditText.getText()).toString());
+
+        // get gender
+        String gender = ((RadioButton) getActivity().findViewById(mGenderRadioGroup.getCheckedRadioButtonId())).getText().toString();
+
+        // calculate weight in lbs
+        Double weight = Double.valueOf(Objects.requireNonNull(mWeightEditText.getText()).toString());
+        String weightType = ((RadioButton) getActivity().findViewById(mWeightRadioGroup.getCheckedRadioButtonId())).getText().toString();
+        if (weightType.equals("Kilos")) {
+            weight /= 2.205;
+        }
+
+        // calculate height in inches
+        Double height = Double.valueOf(Objects.requireNonNull(mHeightEditText.getText()).toString());
+        String heightType = ((RadioButton) getActivity().findViewById(mHeightRadioGroup.getCheckedRadioButtonId())).getText().toString();
+        if (heightType.equals("CM")) {
+            weight /= 2.54;
+        }
+
+        // calculate bmr
+        Double bmr;
+        if (gender.equals("Male")) {
+            bmr = 66 + (6.23 * weight) + (12.7 * height) - (6.8 * age);
+        } else {
+            bmr = 66 + (4.35 * weight) + (4.7 * height) - (4.7 * age);
+        }
+
+        // multiply by activity level
+        switch (mActivityLevelSpinner.getSelectedItemPosition()) {
+            case 1:
+                return ((Double) (bmr * 1.2)).intValue();
+            case 2:
+                return ((Double) (bmr * 1.375)).intValue();
+            case 3:
+                return ((Double) (bmr * 1.55)).intValue();
+            case 4:
+                return ((Double) (bmr * 1.725)).intValue();
+            case 5:
+                return ((Double) (bmr * 1.9)).intValue();
+            case 0:
+            default:
+                return bmr.intValue();
+        }
+    }
 }
