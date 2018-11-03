@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -49,6 +50,12 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
 
     @BindView(R.id.restaurant_recycler_view)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.no_results_include)
+    ConstraintLayout mNoResultsLayout;
+
+    @BindView(R.id.loading_include)
+    ConstraintLayout mLoadingLayout;
 
     RestaurantAdapter mAdapter;
     private Unbinder mUnbinder;
@@ -101,6 +108,7 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
     }
 
     private void getMenu() {
+        showLoadingScreen();
 
         // if no restaurant id was passed in, show the error screen
         if (mRestaurantId == null) {
@@ -125,7 +133,7 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
         FirestoreRecyclerOptions<Food> options = new FirestoreRecyclerOptions.Builder<Food>()
                 .setQuery(query, Food.class)
                 .build();
-        mAdapter = new RestaurantAdapter(options);
+        mAdapter = new RestaurantAdapter(options, this);
         mAdapter.setOnRecyclerViewClickListener(this);
 
         // set layout manager on recycler view
@@ -213,16 +221,22 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
 
     @Override
     public void showLoadingScreen() {
-
+        mLoadingLayout.setVisibility(View.VISIBLE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void showErrorScreen() {
-
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void showResults() {
-
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

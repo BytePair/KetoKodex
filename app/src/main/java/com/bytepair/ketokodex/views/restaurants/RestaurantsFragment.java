@@ -2,6 +2,7 @@ package com.bytepair.ketokodex.views.restaurants;
 
 
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.bytepair.ketokodex.views.restaurant.RestaurantFragment;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -32,10 +34,16 @@ import static com.bytepair.ketokodex.views.restaurant.RestaurantFragment.RESTAUR
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RestaurantsFragment extends Fragment implements OnRecyclerViewClickListener {
+public class RestaurantsFragment extends Fragment implements OnRecyclerViewClickListener, DataLoadingInterface {
 
     @BindView(R.id.restaurant_recycler_view)
     RecyclerView mRecyclerView;
+
+    @BindView(R.id.no_results_include)
+    ConstraintLayout mNoResultsLayout;
+
+    @BindView(R.id.loading_include)
+    ConstraintLayout mLoadingLayout;
 
     private RestaurantsAdapter mAdapter;
     private Unbinder mUnbinder;
@@ -74,6 +82,7 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
     }
 
     private void getRestaurants() {
+        showLoadingScreen();
 
         // build query
         Query query;
@@ -87,7 +96,7 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
         FirestoreRecyclerOptions<Restaurant> options = new FirestoreRecyclerOptions.Builder<Restaurant>()
                 .setQuery(query, Restaurant.class)
                 .build();
-        mAdapter = new RestaurantsAdapter(options);
+        mAdapter = new RestaurantsAdapter(options, this);
         mAdapter.setOnRecyclerViewClickListener(this);
 
         // set layout manager on recycler view
@@ -145,5 +154,26 @@ public class RestaurantsFragment extends Fragment implements OnRecyclerViewClick
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public void showLoadingScreen() {
+        mLoadingLayout.setVisibility(View.VISIBLE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showErrorScreen() {
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showResults() {
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

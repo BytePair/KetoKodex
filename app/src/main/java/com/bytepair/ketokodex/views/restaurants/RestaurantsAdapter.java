@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -15,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, RestaurantsHolder> {
 
     private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
+    private DataLoadingInterface mDataLoadingInterface;
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -26,6 +28,11 @@ public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, Res
      */
     public RestaurantsAdapter(@NonNull FirestoreRecyclerOptions<Restaurant> options) {
         super(options);
+    }
+
+    public RestaurantsAdapter(@NonNull FirestoreRecyclerOptions<Restaurant> options, DataLoadingInterface dataLoadingInterface) {
+        super(options);
+        this.mDataLoadingInterface = dataLoadingInterface;
     }
 
     @Override
@@ -54,6 +61,11 @@ public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, Res
      */
     @Override
     public void onDataChanged() {
+        if (getItemCount() < 1) {
+            mDataLoadingInterface.showErrorScreen();
+        } else {
+            mDataLoadingInterface.showResults();
+        }
     }
 
     /**
@@ -64,6 +76,7 @@ public class RestaurantsAdapter extends FirestoreRecyclerAdapter<Restaurant, Res
      */
     @Override
     public void onError(@NonNull FirebaseFirestoreException e) {
+        mDataLoadingInterface.showErrorScreen();
         super.onError(e);
     }
 

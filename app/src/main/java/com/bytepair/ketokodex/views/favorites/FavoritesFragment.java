@@ -2,6 +2,8 @@ package com.bytepair.ketokodex.views.favorites;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,17 +11,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Favorite;
 import com.bytepair.ketokodex.views.food.FoodFragment;
+import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import timber.log.Timber;
@@ -34,8 +39,10 @@ import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoritesFragment extends Fragment implements OnRecyclerViewClickListener {
+public class FavoritesFragment extends Fragment implements OnRecyclerViewClickListener, DataLoadingInterface {
 
+    private ConstraintLayout mNoResultsLayout;
+    private ConstraintLayout mLoadingLayout;
     private RecyclerView mRecyclerView;
     private FavoriteAdapter mAdapter;
     private Unbinder mUnbinder;
@@ -45,19 +52,21 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment depending on if user is signed in or not
         View view;
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             view = inflater.inflate(R.layout.fragment_favorites_please_sign_in, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_favorites, container, false);
+            mUnbinder = ButterKnife.bind(this, view);
             mRecyclerView = view.findViewById(R.id.favorites_recycler_view);
+            mNoResultsLayout = view.findViewById(R.id.no_results_include);
+            mLoadingLayout = view.findViewById(R.id.loading_include);
             getFavorites();
         }
-
-        mUnbinder = ButterKnife.bind(this, view);
 
         hideFab();
         setUpToolbar();
@@ -80,6 +89,8 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
     }
 
     private void getFavorites() {
+        showLoadingScreen();
+
         // build query
         Query query = FirebaseFirestore.getInstance()
                 .collection(FAVORITES_KEY)
@@ -90,7 +101,7 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
         FirestoreRecyclerOptions<Favorite> options = new FirestoreRecyclerOptions.Builder<Favorite>()
                 .setQuery(query, Favorite.class)
                 .build();
-        mAdapter = new FavoriteAdapter(options);
+        mAdapter = new FavoriteAdapter(options, this);
         mAdapter.setOnRecyclerViewClickListener(this);
 
         // set layout manager on recycler view
@@ -140,5 +151,26 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    public void showLoadingScreen() {
+        mLoadingLayout.setVisibility(View.VISIBLE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showErrorScreen() {
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showResults() {
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 }

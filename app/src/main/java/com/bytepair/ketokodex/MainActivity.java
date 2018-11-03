@@ -74,19 +74,16 @@ public class MainActivity extends AppCompatActivity
 
         setSupportActionBar(mToolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        hideFab();
         setupGoogleAuth();
         enableNavigationToggle();
 
         mNavigationView.setNavigationItemSelectedListener(this);
+        if (savedInstanceState == null) {
+            MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.nav_restaurants);
+            onNavigationItemSelected(menuItem);
+            menuItem.setChecked(true);
+        }
     }
 
     @Override
@@ -230,6 +227,13 @@ public class MainActivity extends AppCompatActivity
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(false);
+        }
+    }
+
+    private void hideFab() {
+        View view = findViewById(R.id.fab);
+        if (view != null) {
+            view.setVisibility(View.GONE);
         }
     }
 

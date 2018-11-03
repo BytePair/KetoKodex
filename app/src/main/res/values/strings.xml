@@ -37,4 +37,5 @@
     <string name="unknown">Unknown</string>
     <string name="add_food_please_sign_in">Please sign in to add custom foods</string>
     <string name="favorites_please_sign_in">Please sign in to use favorites</string>
+    <string name="no_results_found">No results found</string>
 </resources>

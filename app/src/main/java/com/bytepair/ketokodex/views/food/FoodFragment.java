@@ -4,9 +4,11 @@ package com.bytepair.ketokodex.views.food;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +59,14 @@ import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
  */
 public class FoodFragment extends Fragment implements DataLoadingInterface {
 
+    @BindView(R.id.food_details_constraint_layout)
+    ConstraintLayout mFoodDetailsLayout;
 
+    @BindView(R.id.no_results_include)
+    ConstraintLayout mNoResultsLayout;
+
+    @BindView(R.id.loading_include)
+    ConstraintLayout mLoadingLayout;
 
     @BindView(R.id.food_name_text_view)
     TextView mFoodNameTextView;
@@ -143,6 +152,7 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
                     mFood.setId(mFoodId);
                     bindFoodToView();
                     setUpFab();
+                    showResults();
                 } else {
                     showErrorScreen();
                 }
@@ -292,16 +302,22 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
 
     @Override
     public void showLoadingScreen() {
-
+        mLoadingLayout.setVisibility(View.VISIBLE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mFoodDetailsLayout.setVisibility(View.GONE);
     }
 
     @Override
     public void showErrorScreen() {
-
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.VISIBLE);
+        mFoodDetailsLayout.setVisibility(View.GONE);
     }
 
     @Override
     public void showResults() {
-
+        mLoadingLayout.setVisibility(View.GONE);
+        mNoResultsLayout.setVisibility(View.GONE);
+        mFoodDetailsLayout.setVisibility(View.VISIBLE);
     }
 }

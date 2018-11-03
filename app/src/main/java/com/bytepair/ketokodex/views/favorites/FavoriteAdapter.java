@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Favorite;
+import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
 import com.bytepair.ketokodex.views.restaurant.RestaurantHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, FavoriteHolder> {
 
     private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
+    private DataLoadingInterface mDataLoadingInterface;
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -27,6 +29,11 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
      */
     public FavoriteAdapter(@NonNull FirestoreRecyclerOptions<Favorite> options) {
         super(options);
+    }
+
+    public FavoriteAdapter(@NonNull FirestoreRecyclerOptions<Favorite> options, DataLoadingInterface dataLoadingInterface) {
+        super(options);
+        this.mDataLoadingInterface = dataLoadingInterface;
     }
 
     @Override
@@ -56,6 +63,11 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
      */
     @Override
     public void onDataChanged() {
+        if (getItemCount() < 1) {
+            mDataLoadingInterface.showErrorScreen();
+        } else {
+            mDataLoadingInterface.showResults();
+        }
     }
 
     /**
@@ -66,6 +78,7 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
      */
     @Override
     public void onError(@NonNull FirebaseFirestoreException e) {
+        mDataLoadingInterface.showErrorScreen();
         super.onError(e);
     }
 

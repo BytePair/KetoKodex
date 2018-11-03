@@ -1,9 +1,11 @@
 package com.bytepair.ketokodex.views.addfood;
 
 
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
@@ -12,6 +14,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
@@ -24,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -44,12 +48,15 @@ import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 public class AddFoodFragment extends Fragment {
 
     private Unbinder mUnbinder;
+    private Button mAddFoodButton;
     private FloatingActionButton mFab;
     private TextInputEditText mFoodNameEditText;
     private TextInputEditText mCaloriesEditText;
     private TextInputEditText mCarbsEditText;
     private TextInputEditText mProteinEditText;
     private TextInputEditText mFatEditText;
+    private ConstraintLayout mProgressLayout;
+    private ConstraintLayout mAddFoodLayout;
 
     public AddFoodFragment() {
         // Required empty public constructor
@@ -62,12 +69,12 @@ public class AddFoodFragment extends Fragment {
         View view;
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             view = inflater.inflate(R.layout.fragment_add_food_please_sign_in, container, false);
-            hideFab();
         } else {
             view = inflater.inflate(R.layout.fragment_add_food, container, false);
             bindViews(view);
-            setUpFab();
+            setUpButton();
         }
+        hideFab();
         mUnbinder = ButterKnife.bind(this, view);
 
         setUpToolbar();
@@ -89,17 +96,11 @@ public class AddFoodFragment extends Fragment {
         }
     }
 
-    private void setUpFab() {
+    private void setUpButton() {
         if (getActivity() == null) {
             return;
         }
-        mFab = getActivity().findViewById(R.id.fab);
-        ((View) mFab).setVisibility(View.VISIBLE);
-        mFab.setImageResource(R.drawable.ic_baseline_add);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mFab.setColorFilter(getActivity().getColor(android.R.color.white));
-        }
-        mFab.setOnClickListener(new View.OnClickListener() {
+        mAddFoodButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -150,17 +151,20 @@ public class AddFoodFragment extends Fragment {
     }
 
     private void saveFood(Map<String,Object> customFood) {
+        showProgressbar();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(FOOD_KEY).add(customFood)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
+                        hideProgressbar();
                         showSnackbar("Food added successfully");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        hideProgressbar();
                         showSnackbar(e.getMessage());
                     }
                 });
@@ -171,11 +175,23 @@ public class AddFoodFragment extends Fragment {
     }
 
     private void bindViews(View view) {
+        // bind views
+        mProgressLayout = view.findViewById(R.id.progress_constraint_layout);
+        mAddFoodLayout = view.findViewById(R.id.add_food_constraint_layout);
         mFoodNameEditText = view.findViewById(R.id.food_name_edit_text);
         mCaloriesEditText = view.findViewById(R.id.calories_edit_text);
-        mCarbsEditText = view.findViewById(R.id.carbs_edit_text);
         mProteinEditText = view.findViewById(R.id.protein_edit_text);
+        mCarbsEditText = view.findViewById(R.id.carbs_edit_text);
+        mAddFoodButton = view.findViewById(R.id.add_food_button);
         mFatEditText = view.findViewById(R.id.fat_edit_text);
+
+        hideProgressbar();
+
+        // set button to correct color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity() != null) {
+            mAddFoodButton.getBackground().setColorFilter(getActivity().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
+            mAddFoodButton.setTextColor(getActivity().getColor(android.R.color.white));
+        }
     }
 
     private void hideFab() {
@@ -185,5 +201,15 @@ public class AddFoodFragment extends Fragment {
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    private void hideProgressbar() {
+        mAddFoodLayout.setVisibility(View.VISIBLE);
+        mProgressLayout.setVisibility(View.GONE);
+    }
+
+    private void showProgressbar() {
+        mAddFoodLayout.setVisibility(View.GONE);
+        mProgressLayout.setVisibility(View.VISIBLE);
     }
 }

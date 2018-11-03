@@ -5,6 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".views.restaurants.RestaurantsFragment">
 
+    <include
+        layout="@layout/loading"
+        android:id="@+id/loading_include"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
+        layout="@layout/no_results_found"
+        android:id="@+id/no_results_include"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/restaurant_recycler_view"
         android:layout_width="match_parent"
