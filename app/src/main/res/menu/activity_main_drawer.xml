@@ -15,13 +15,9 @@
             android:icon="@drawable/ic_baseline_favorite"
             android:title="@string/favorites" />
         <item
-            android:id="@+id/nav_map"
-            android:icon="@drawable/ic_baseline_map"
-            android:title="@string/map" />
-        <item
             android:id="@+id/nav_add"
             android:icon="@drawable/ic_baseline_add"
-            android:title="@string/add" />
+            android:title="@string/custom" />
         <item
             android:id="@+id/nav_calculator"
             android:icon="@drawable/ic_baseline_insert_chart_outlined"

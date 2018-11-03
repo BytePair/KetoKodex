@@ -24,7 +24,6 @@ import com.bytepair.ketokodex.views.authentication.SignOutFragment;
 import com.bytepair.ketokodex.views.authentication.SignUpFragment;
 import com.bytepair.ketokodex.views.calculator.CalculatorFragment;
 import com.bytepair.ketokodex.views.favorites.FavoritesFragment;
-import com.bytepair.ketokodex.views.map.MapFragment;
 import com.bytepair.ketokodex.views.restaurants.RestaurantsFragment;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -147,10 +146,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_favorites:
                 fragmentClass = FavoritesFragment.class;
                 Timber.i("clicked nav favorites...");
-                break;
-            case R.id.nav_map:
-                fragmentClass = MapFragment.class;
-                Timber.i("clicked nav map...");
                 break;
             case R.id.nav_add:
                 fragmentClass = AddFoodFragment.class;

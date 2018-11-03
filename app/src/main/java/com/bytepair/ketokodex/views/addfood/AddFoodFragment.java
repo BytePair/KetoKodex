@@ -112,23 +112,23 @@ public class AddFoodFragment extends Fragment {
 
                 // verify values were entered
                 if (foodName == null) {
-                    showSnackbar("Please enter a valid food name");
+                    mFoodNameEditText.setError("Please enter a valid food name");
                     return;
                 }
                 if (calories == null)  {
-                    showSnackbar("Please enter a valid calorie count");
+                    mCaloriesEditText.setError("Please enter a valid calorie count");
                     return;
                 }
                 if (carbs == null) {
-                    showSnackbar("Please enter a valid carb count");
+                    mCarbsEditText.setError("Please enter a valid carb count");
                     return;
                 }
                 if (protein == null) {
-                    showSnackbar("Please enter a valid protein count");
+                    mProteinEditText.setError("Please enter a valid protein count");
                     return;
                 }
                 if (fat == null) {
-                    showSnackbar("Please enter a valid fat count");
+                    mFatEditText.setError("Please enter a valid fat count");
                     return;
                 }
 

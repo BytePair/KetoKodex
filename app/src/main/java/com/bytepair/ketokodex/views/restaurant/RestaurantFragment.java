@@ -1,8 +1,12 @@
 package com.bytepair.ketokodex.views.restaurant;
 
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,6 +52,7 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
 
     RestaurantAdapter mAdapter;
     private Unbinder mUnbinder;
+    private FloatingActionButton mFab;
     private String mRestaurantName;
     private String mRestaurantId;
 
@@ -62,12 +67,19 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
         View view = inflater.inflate(R.layout.fragment_restaurant, container, false);
         mUnbinder = ButterKnife.bind(this, view);
 
+        // get restaurant name and id for use in toolbar and map search
         if (getArguments() != null) {
             mRestaurantName = getArguments().getString(RESTAURANT_NAME);
             mRestaurantId = getArguments().getString(RESTAURANT_ID);
         }
 
-        hideFab();
+        // if restaurant name is valid, set up FAB to launch google maps search
+        if (mRestaurantName == null || mRestaurantName.equals("-Custom-")) {
+            hideFab();
+        } else {
+            setUpFab();
+        }
+
         setUpToolbar();
         getMenu();
 
@@ -159,6 +171,29 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
                 view.setVisibility(View.GONE);
             }
         }
+    }
+
+    private void setUpFab() {
+        if (getActivity() == null) {
+            return;
+        }
+        mFab = getActivity().findViewById(R.id.fab);
+        ((View) mFab).setVisibility(View.VISIBLE);
+        mFab.setImageResource(R.drawable.ic_baseline_map);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mFab.setColorFilter(getActivity().getColor(android.R.color.white));
+        }
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Search for restaurants nearby
+                Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + mRestaurantName);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                startActivity(mapIntent);
+            }
+        });
     }
 
     private Query getCustomFoodQuery() {
