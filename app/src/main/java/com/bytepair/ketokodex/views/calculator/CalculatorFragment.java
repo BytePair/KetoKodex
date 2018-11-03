@@ -139,36 +139,36 @@ public class CalculatorFragment extends Fragment {
     private boolean isInputValid() {
         // validate age
         if (mAgeEditText.getText() == null || mAgeEditText.getText().toString().isEmpty()) {
-            mAgeEditText.setError("Please enter age");
+            mAgeEditText.setError(getString(R.string.age_error_one));
             return false;
         }
         Integer age = Integer.valueOf(mAgeEditText.getText().toString());
         if (age < 1 || age > 120) {
-            mAgeEditText.setError("Please enter valid age");
+            mAgeEditText.setError(getString(R.string.age_error_two));
             return false;
         }
         // validate gender
 
         // validate weight
         if (mWeightEditText.getText() == null || mWeightEditText.getText().toString().isEmpty()) {
-            mWeightEditText.setError("Please enter weight");
+            mWeightEditText.setError(getString(R.string.weight_error_one));
             return false;
         }
         Integer weight = Integer.valueOf(mWeightEditText.getText().toString());
         if (weight < 1) {
-            mWeightEditText.setError("Please enter valid weight");
+            mWeightEditText.setError(getString(R.string.weight_error_two));
             return false;
         }
         // validate lb/kilo
 
         // validate height
         if (mHeightEditText.getText() == null || mHeightEditText.getText().toString().isEmpty()) {
-            mHeightEditText.setError("Please enter height");
+            mHeightEditText.setError(getString(R.string.height_error_one));
             return false;
         }
         Integer height = Integer.valueOf(mHeightEditText.getText().toString());
         if (height < 1) {
-            mHeightEditText.setError("Please enter valid height");
+            mHeightEditText.setError(getString(R.string.height_error_two));
             return false;
         }
         // validate in/cm

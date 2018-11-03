@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
@@ -24,10 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import timber.log.Timber;
 
 import static com.bytepair.ketokodex.helpers.Constants.FAVORITES_KEY;
 import static com.bytepair.ketokodex.helpers.Constants.FOOD_ID;
@@ -131,7 +128,6 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
     @Override
     public void onItemClick(int position, View view, String id) {
         Favorite favorite = mAdapter.getItem(position);
-        Timber.d( "Clicked %s", favorite.getName());
         Bundle data = new Bundle();
         data.putString(RESTAURANT_NAME, favorite.getRestaurantName());
         data.putString(FOOD_NAME, favorite.getName());

@@ -27,7 +27,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -113,23 +112,23 @@ public class AddFoodFragment extends Fragment {
 
                 // verify values were entered
                 if (foodName == null) {
-                    mFoodNameEditText.setError("Please enter a valid food name");
+                    mFoodNameEditText.setError(getString(R.string.valid_food_error));
                     return;
                 }
                 if (calories == null)  {
-                    mCaloriesEditText.setError("Please enter a valid calorie count");
+                    mCaloriesEditText.setError(getString(R.string.valid_calorie_error));
                     return;
                 }
                 if (carbs == null) {
-                    mCarbsEditText.setError("Please enter a valid carb count");
+                    mCarbsEditText.setError(getString(R.string.valid_carb_error));
                     return;
                 }
                 if (protein == null) {
-                    mProteinEditText.setError("Please enter a valid protein count");
+                    mProteinEditText.setError(getString(R.string.valid_protein_error));
                     return;
                 }
                 if (fat == null) {
-                    mFatEditText.setError("Please enter a valid fat count");
+                    mFatEditText.setError(getString(R.string.valid_fat_error));
                     return;
                 }
 
@@ -158,7 +157,7 @@ public class AddFoodFragment extends Fragment {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         hideProgressbar();
-                        showSnackbar("Food added successfully");
+                        showSnackbar(getString(R.string.food_added_successfully));
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

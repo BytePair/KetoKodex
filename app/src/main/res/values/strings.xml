@@ -18,7 +18,6 @@
     <string name="menu">Menu</string>
     <string name="food">Food</string>
     <string name="restaurants">Restaurants</string>
-
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="reset_password">Reset Password</string>
@@ -38,4 +37,26 @@
     <string name="add_food_please_sign_in">Please sign in to add custom foods</string>
     <string name="favorites_please_sign_in">Please sign in to use favorites</string>
     <string name="no_results_found">No results found</string>
+    <string name="food_added_successfully">Food added successfully</string>
+    <string name="valid_food_error">Please enter a valid food name</string>
+    <string name="valid_calorie_error">Please enter a valid calorie count</string>
+    <string name="valid_carb_error">Please enter a valid carb count</string>
+    <string name="valid_protein_error">Please enter a valid protein count</string>
+    <string name="valid_fat_error">Please enter a valid fat count</string>
+    <string name="no_email_found">No email address found</string>
+    <string name="age_error_one">Please enter age</string>
+    <string name="age_error_two">Please enter valid age</string>
+    <string name="weight_error_one">Please enter weight</string>
+    <string name="weight_error_two">Please enter valid weight</string>
+    <string name="height_error_one">Please enter height</string>
+    <string name="height_error_two">Please enter valid height</string>
+    <string name="sign_in_success">Signed In Successfully</string>
+    <string name="user_creation_success">User created successfully</string>
+    <string name="password_required">Password required</string>
+    <string name="email_required">Email address required</string>
+    <string name="auth_failed">Authentication Failed.</string>
+    <string name="google_sign_in_failed">Google sign in failed</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="error_removing_from_favorites">Error removing from favorites</string>
 </resources>

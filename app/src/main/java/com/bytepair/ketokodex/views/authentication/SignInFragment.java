@@ -49,7 +49,6 @@ public class SignInFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -109,7 +108,6 @@ public class SignInFragment extends Fragment {
     }
 
     void forgotPassword() {
-        Timber.i("forgot password clicked");
         try {
             MainActivity mainActivity = ((MainActivity) getActivity());
             if (mainActivity != null) {
@@ -122,8 +120,6 @@ public class SignInFragment extends Fragment {
     }
 
     private void signIn() {
-        Timber.i("sign in clicked");
-        Timber.i("sign up clicked");
         String email = (mEmailInput.getText() == null) ? null : mEmailInput.getText().toString();
         String password = (mPasswordInput.getText() == null) ? null : mPasswordInput.getText().toString();
         if (getActivity() instanceof MainActivity) {
@@ -132,7 +128,6 @@ public class SignInFragment extends Fragment {
     }
 
     private void googleSignIn() {
-        Timber.i("google sign in clicked");
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).googleSignIn();
         }

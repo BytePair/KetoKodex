@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseUser;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import timber.log.Timber;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,7 +36,6 @@ public class SignOutFragment extends Fragment {
     public SignOutFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,12 +82,11 @@ public class SignOutFragment extends Fragment {
         if (user != null) {
             mEmailTextView.setText(user.getEmail());
         } else {
-            mEmailTextView.setText("No email address found");
+            mEmailTextView.setText(R.string.no_email_found);
         }
     }
 
     private void signOut() {
-        Timber.i("sign out clicked");
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).signOut();
         }

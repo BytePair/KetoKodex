@@ -3,7 +3,6 @@ package com.bytepair.ketokodex;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +56,6 @@ public class MainActivity extends AppCompatActivity
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mFirebaseAuth;
     private Class mAuthFragmentClass;
-    private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 2;
 
     @Override
@@ -291,14 +288,12 @@ public class MainActivity extends AppCompatActivity
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Snackbar.make(mDrawerLayout, "Google sign in failed", Snackbar.LENGTH_SHORT).show();
+                showSnackbar(getString(R.string.google_sign_in_failed));
             }
         }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mFirebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -306,14 +301,12 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mFirebaseAuth.getCurrentUser();
                             updateUI(user);
                             refreshSignInTab();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Snackbar.make(mDrawerLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            showSnackbar(getString(R.string.auth_failed));
                             updateUI(null);
                         }
                     }
@@ -336,16 +329,16 @@ public class MainActivity extends AppCompatActivity
 
         updateUI(null);
         refreshSignInTab();
-        Snackbar.make(mDrawerLayout, "Signed Out", Snackbar.LENGTH_SHORT).show();
+        showSnackbar(getString(R.string.signed_out));
     }
 
     public void emailSignUp(String email, String password) {
         if (email == null || email.length() < 1) {
-            Snackbar.make(mDrawerLayout, "Email address required", Snackbar.LENGTH_LONG).show();
+            showSnackbar(getString(R.string.email_required));
             return;
         }
         if (password == null || password.length() < 1) {
-            Snackbar.make(mDrawerLayout, "Password required", Snackbar.LENGTH_LONG).show();
+            showSnackbar(getString(R.string.password_required));
             return;
         }
         mFirebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -354,15 +347,13 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Timber.d("createUserWithEmail:success");
                             FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                            Snackbar.make(mNavigationView, "User created successfully", Snackbar.LENGTH_LONG).show();
+                            showSnackbar(getString(R.string.user_creation_success));
                             updateUI(user);
                             refreshSignInTab();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Timber.w(task.getException(), "createUserWithEmail:failure");
-                            Snackbar.make(mDrawerLayout, task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
+                            showSnackbar(task.getException().getMessage());
                             updateUI( null);
                         }
                     }
@@ -371,11 +362,11 @@ public class MainActivity extends AppCompatActivity
 
     public void emailSignIn(String email, String password) {
         if (email == null || email.length() < 1) {
-            Snackbar.make(mDrawerLayout, "Email address required", Snackbar.LENGTH_LONG).show();
+            showSnackbar(getString(R.string.email_required));
             return;
         }
         if (password == null || password.length() < 1) {
-            Snackbar.make(mDrawerLayout, "Password required", Snackbar.LENGTH_LONG).show();
+            showSnackbar(getString(R.string.password_required));
             return;
         }
         mFirebaseAuth.signInWithEmailAndPassword(email, password)
@@ -384,18 +375,20 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Timber.d("createUserWithEmail:success");
                             FirebaseUser user = mFirebaseAuth.getCurrentUser();
-                            Snackbar.make(mNavigationView, "Signed In Successfully", Snackbar.LENGTH_LONG).show();
+                            showSnackbar(getString(R.string.sign_in_success));
                             updateUI(user);
                             refreshSignInTab();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Timber.w(task.getException(), "createUserWithEmail:failure");
-                            Snackbar.make(mDrawerLayout, task.getException().getMessage(), Snackbar.LENGTH_LONG).show();
+                            showSnackbar(task.getException().getMessage());
                             updateUI( null);
                         }
                     }
                 });
+    }
+
+    public void showSnackbar(String message) {
+        Snackbar.make(mDrawerLayout, message, Snackbar.LENGTH_LONG).show();
     }
 }

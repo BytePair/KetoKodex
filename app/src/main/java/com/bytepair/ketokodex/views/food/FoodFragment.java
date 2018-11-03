@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,7 +95,7 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_food, container, false);
@@ -147,7 +145,6 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
-                    Timber.d("Food found: %s", task.getResult().toString());
                     mFood = task.getResult().toObject(Food.class);
                     mFood.setId(mFoodId);
                     bindFoodToView();
@@ -185,7 +182,6 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
-                    Timber.d("Favorite found: %s", task.getResult().toString());
                     if (task.getResult().getDocuments().size() == 0) {
                         mFavorite = null;
                         mFab.setImageResource(R.drawable.ic_favorite_border);
@@ -238,14 +234,14 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        Snackbar.make(mFoodNameTextView,"Added to favorites", Snackbar.LENGTH_SHORT);
+                        showSnackbar(getString(R.string.added_to_favorites));
                         setUpFab();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(mFoodNameTextView, e.getMessage(), Snackbar.LENGTH_SHORT);
+                        showSnackbar(e.getMessage());
                         setUpFab();
                     }
                 });
@@ -258,14 +254,14 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Snackbar.make(mFoodNameTextView, "Removed from favorites", Snackbar.LENGTH_SHORT);
+                        showSnackbar(getString(R.string.removed_from_favorites));
                         setUpFab();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Snackbar.make(mFoodNameTextView, "Error removing from favorites", Snackbar.LENGTH_SHORT);
+                        showSnackbar(getString(R.string.error_removing_from_favorites));
                         setUpFab();
                     }
                 });
@@ -280,7 +276,6 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
-                    Timber.d("Food found: %s", task.getResult().toString());
                     Restaurant restaurant = task.getResult().toObject(Restaurant.class);
                     name[0] = restaurant.getName();
                 } else {
@@ -319,5 +314,11 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
         mLoadingLayout.setVisibility(View.GONE);
         mNoResultsLayout.setVisibility(View.GONE);
         mFoodDetailsLayout.setVisibility(View.VISIBLE);
+    }
+
+    private void showSnackbar(String message) {
+        if (getActivity() instanceof MainActivity) {
+            ((MainActivity) getActivity()).showSnackbar(message);
+        }
     }
 }

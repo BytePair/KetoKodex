@@ -9,7 +9,6 @@ import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Favorite;
 import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
-import com.bytepair.ketokodex.views.restaurant.RestaurantHolder;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
