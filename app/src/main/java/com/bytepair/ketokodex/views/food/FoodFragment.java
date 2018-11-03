@@ -1,6 +1,9 @@
 package com.bytepair.ketokodex.views.food;
 
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.ContentValues;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,8 +19,9 @@ import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Favorite;
 import com.bytepair.ketokodex.models.Food;
-import com.bytepair.ketokodex.models.Restaurant;
+import com.bytepair.ketokodex.provider.FavoriteContract;
 import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
+import com.bytepair.ketokodex.widget.FavoritesWidgetProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,7 +39,6 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import timber.log.Timber;
 
 import static com.bytepair.ketokodex.helpers.Constants.CALORIES_KEY;
 import static com.bytepair.ketokodex.helpers.Constants.CARBS_KEY;
@@ -178,6 +181,7 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
         FirebaseFirestore.getInstance()
                 .collection(FAVORITES_KEY)
                 .whereEqualTo(FOOD_ID_KEY, mFood.getId())
+                .whereEqualTo(USER_ID_KEY, FirebaseAuth.getInstance().getUid())
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -235,6 +239,7 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         showSnackbar(getString(R.string.added_to_favorites));
+                        addToDatabase(documentReference);
                         setUpFab();
                     }
                 })
@@ -247,14 +252,28 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
                 });
     }
 
+    private void addToDatabase(DocumentReference documentReference) {
+        String id = documentReference.getId();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_ID, id);
+        contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_NAME, mFood.getName());
+        getContext().getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+        AppWidgetManager.getInstance(getContext()).notifyAppWidgetViewDataChanged(
+                AppWidgetManager.getInstance(getContext()).getAppWidgetIds(new ComponentName(getContext(), FavoritesWidgetProvider.class)),
+                R.id.widget_list_view
+        );
+    }
+
     private void removeFavorite() {
         // remove from favorites
+        final String id = mFavorite.getId();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(FAVORITES_KEY).document(mFavorite.getId()).delete()
+        db.collection(FAVORITES_KEY).document(id).delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
                         showSnackbar(getString(R.string.removed_from_favorites));
+                        deleteFromDatabase(id);
                         setUpFab();
                     }
                 })
@@ -267,23 +286,12 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
                 });
     }
 
-    private String getRestaurantName(String restaurantId) {
-        final String[] name = {""};
-        FirebaseFirestore.getInstance()
-                .collection("restaurants")
-                .document(mFood.getRestaurantId())
-                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful() && task.getResult() != null) {
-                    Restaurant restaurant = task.getResult().toObject(Restaurant.class);
-                    name[0] = restaurant.getName();
-                } else {
-                    Timber.d("Could not find restaurant with id: %s", mFood.getRestaurantId());
-                }
-            }
-        });
-        return name[0];
+    private void deleteFromDatabase(String id) {
+        getContext().getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI, "favoriteId=?", new String[]{id});
+        AppWidgetManager.getInstance(getContext()).notifyAppWidgetViewDataChanged(
+                AppWidgetManager.getInstance(getContext()).getAppWidgetIds(new ComponentName(getContext(), FavoritesWidgetProvider.class)),
+                R.id.widget_list_view
+        );
     }
 
     private void hideFab() {

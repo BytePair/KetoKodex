@@ -1,5 +1,9 @@
 package com.bytepair.ketokodex.views.favorites;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.ContentValues;
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,8 +11,10 @@ import android.view.ViewGroup;
 
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.models.Favorite;
+import com.bytepair.ketokodex.provider.FavoriteContract;
 import com.bytepair.ketokodex.views.interfaces.DataLoadingInterface;
 import com.bytepair.ketokodex.views.interfaces.OnRecyclerViewClickListener;
+import com.bytepair.ketokodex.widget.FavoritesWidgetProvider;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -17,6 +23,7 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
 
     private OnRecyclerViewClickListener mOnRecyclerViewClickListener;
     private DataLoadingInterface mDataLoadingInterface;
+    private Context mContext;
 
     /**
      * Create a new RecyclerView adapter that listens to a Firestore Query.  See {@link
@@ -30,8 +37,9 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
         super(options);
     }
 
-    public FavoriteAdapter(@NonNull FirestoreRecyclerOptions<Favorite> options, DataLoadingInterface dataLoadingInterface) {
+    public FavoriteAdapter(@NonNull FirestoreRecyclerOptions<Favorite> options, DataLoadingInterface dataLoadingInterface, Context context) {
         super(options);
+        mContext = context;
         this.mDataLoadingInterface = dataLoadingInterface;
     }
 
@@ -67,6 +75,7 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
         } else {
             mDataLoadingInterface.showResults();
         }
+        updateDatabase();
     }
 
     /**
@@ -83,5 +92,21 @@ public class FavoriteAdapter extends FirestoreRecyclerAdapter<Favorite, Favorite
 
     public void setOnRecyclerViewClickListener(OnRecyclerViewClickListener onRecyclerViewClickListener) {
         this.mOnRecyclerViewClickListener = onRecyclerViewClickListener;
+    }
+
+    private void updateDatabase() {
+        mContext.getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI, null, null);
+        for (int i = 0; i < getItemCount(); i++) {
+            String id = getSnapshots().getSnapshot(i).getId();
+            Favorite favorite = getSnapshots().get(i);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_ID, id);
+            contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_NAME, favorite.getName());
+            mContext.getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+        }
+        AppWidgetManager.getInstance(mContext).notifyAppWidgetViewDataChanged(
+                AppWidgetManager.getInstance(mContext).getAppWidgetIds(new ComponentName(mContext, FavoritesWidgetProvider.class)),
+                R.id.widget_list_view
+        );
     }
 }

@@ -74,7 +74,9 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mUnbinder.unbind();
+        if (mUnbinder != null) {
+            mUnbinder.unbind();
+        }
     }
 
     private void setUpToolbar() {
@@ -98,7 +100,7 @@ public class FavoritesFragment extends Fragment implements OnRecyclerViewClickLi
         FirestoreRecyclerOptions<Favorite> options = new FirestoreRecyclerOptions.Builder<Favorite>()
                 .setQuery(query, Favorite.class)
                 .build();
-        mAdapter = new FavoriteAdapter(options, this);
+        mAdapter = new FavoriteAdapter(options, this, getContext());
         mAdapter.setOnRecyclerViewClickListener(this);
 
         // set layout manager on recycler view

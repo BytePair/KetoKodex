@@ -59,4 +59,7 @@
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="error_removing_from_favorites">Error removing from favorites</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="keto_favorites">Keto Favorites</string>
 </resources>

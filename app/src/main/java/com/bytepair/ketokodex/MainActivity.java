@@ -1,5 +1,8 @@
 package com.bytepair.ketokodex;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,12 +20,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.bytepair.ketokodex.models.Favorite;
+import com.bytepair.ketokodex.provider.FavoriteContract;
 import com.bytepair.ketokodex.views.addfood.AddFoodFragment;
 import com.bytepair.ketokodex.views.authentication.SignOutFragment;
 import com.bytepair.ketokodex.views.authentication.SignUpFragment;
 import com.bytepair.ketokodex.views.calculator.CalculatorFragment;
 import com.bytepair.ketokodex.views.favorites.FavoritesFragment;
 import com.bytepair.ketokodex.views.restaurants.RestaurantsFragment;
+import com.bytepair.ketokodex.widget.FavoritesWidgetProvider;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,11 +41,20 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 import timber.log.Timber.DebugTree;
+
+import static com.bytepair.ketokodex.helpers.Constants.FAVORITES_KEY;
+import static com.bytepair.ketokodex.helpers.Constants.USER_ID_KEY;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -268,6 +283,38 @@ public class MainActivity extends AppCompatActivity
             mNavigationView.getMenu().findItem(R.id.nav_sign_up).setTitle(R.string.sign_out);
             mAuthFragmentClass = SignOutFragment.class;
         }
+        updateFavoritesWidget();
+    }
+
+    private void updateFavoritesWidget() {
+        // delete existing favorites
+        getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI, null, null);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(FAVORITES_KEY)
+                .whereEqualTo(USER_ID_KEY, FirebaseAuth.getInstance().getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Timber.w("favorite: task complete");
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                // add favorite to local db
+                                Favorite favorite = documentSnapshot.toObject(Favorite.class);
+                                ContentValues contentValues = new ContentValues();
+                                contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_ID, documentSnapshot.getId());
+                                contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_NAME, favorite.getName());
+                                getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
+                            }
+                        }
+                        // update the widget
+                        AppWidgetManager.getInstance(getApplicationContext()).notifyAppWidgetViewDataChanged(
+                                AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(new ComponentName(getApplicationContext(), FavoritesWidgetProvider.class)),
+                                R.id.widget_list_view
+                        );
+                    }
+                });
     }
 
     public void googleSignIn() {
