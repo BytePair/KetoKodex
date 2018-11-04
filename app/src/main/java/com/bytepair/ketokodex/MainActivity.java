@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mFirebaseAuth;
     private Class mAuthFragmentClass;
     private static final int RC_SIGN_IN = 2;
+    public static final String TAB_KEY = "tab";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +89,22 @@ public class MainActivity extends AppCompatActivity
         enableNavigationToggle();
 
         mNavigationView.setNavigationItemSelectedListener(this);
-        if (savedInstanceState == null) {
-            MenuItem menuItem = mNavigationView.getMenu().findItem(R.id.nav_restaurants);
-            onNavigationItemSelected(menuItem);
-            menuItem.setChecked(true);
+        if (getIntent() != null && getIntent().getExtras() != null && getIntent().getStringExtra(TAB_KEY) != null) {
+            if (getIntent().getStringExtra(TAB_KEY).equals(FavoritesFragment.class.getSimpleName())) {
+                openTab(R.id.nav_favorites);
+            } else {
+                openTab(R.id.nav_restaurants);
+            }
         }
+        else if (savedInstanceState == null) {
+            openTab(R.id.nav_restaurants);
+        }
+    }
+
+    private void openTab(int tabId) {
+        MenuItem menuItem = mNavigationView.getMenu().findItem(tabId);
+        onNavigationItemSelected(menuItem);
+        menuItem.setChecked(true);
     }
 
     @Override
@@ -294,7 +306,6 @@ public class MainActivity extends AppCompatActivity
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Timber.w("favorite: task complete");
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                                 // add favorite to local db

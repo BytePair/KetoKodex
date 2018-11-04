@@ -1,5 +1,6 @@
 package com.bytepair.ketokodex.widget;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -8,8 +9,12 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.bytepair.ketokodex.MainActivity;
 import com.bytepair.ketokodex.R;
 import com.bytepair.ketokodex.provider.FavoriteContract;
+import com.bytepair.ketokodex.views.favorites.FavoritesFragment;
+
+import static com.bytepair.ketokodex.MainActivity.TAB_KEY;
 
 public class FavoritesWidgetRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
@@ -60,17 +65,14 @@ public class FavoritesWidgetRemoteViewsFactory implements RemoteViewsService.Rem
 
         mCursor.moveToPosition(i);
         int name = mCursor.getColumnIndex(FavoriteContract.FavoriteEntry.FAVORITE_NAME);
-        int id = mCursor.getColumnIndex(FavoriteContract.FavoriteEntry.FAVORITE_ID);
 
         RemoteViews row = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item);
         row.setTextViewText(R.id.name, mCursor.getString(name));
 
-        Intent intent = new Intent();
-        Bundle extras = new Bundle();
-
-        extras.putString("id", mCursor.getString(id));
-        intent.putExtras(extras);
-        row.setOnClickFillInIntent(R.id.name, intent);
+        Intent favIntent = new Intent(mContext, MainActivity.class);
+        favIntent.putExtra(TAB_KEY, FavoritesFragment.class.getSimpleName());
+        favIntent.setAction(Long.toString(System.currentTimeMillis()));
+        row.setOnClickFillInIntent(R.id.name, favIntent);
 
         return row;
     }

@@ -10,4 +10,4 @@
     android:paddingEnd="8dp"
     android:textAppearance="?android:attr/textAppearanceLarge"
     android:textColor="@color/colorPrimary"
-    tools:text="Blah" />
+    tools:text="Blah"/>
