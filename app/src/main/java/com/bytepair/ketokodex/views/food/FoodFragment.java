@@ -214,6 +214,7 @@ public class FoodFragment extends Fragment implements DataLoadingInterface {
 
         mFab = getActivity().findViewById(R.id.fab);
         ((View) mFab).setVisibility(View.VISIBLE);
+        mFab.setContentDescription(getString(R.string.food_favorite_fab_content_description));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             mFab.setColorFilter(getActivity().getColor(android.R.color.white));
         }

@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
-                android:hint="Age"
+                android:hint="@string/age"
                 android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
 
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_weight="1"
-                android:text="Male" />
+                android:text="@string/male" />
 
             <RadioButton
                 android:id="@+id/female_radio_button"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_weight="1"
-                android:text="Female" />
+                android:text="@string/female" />
         </RadioGroup>
 
     </android.support.constraint.ConstraintLayout>
@@ -92,7 +92,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
-                android:hint="Weight"
+                android:hint="@string/weight"
                 android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
 
@@ -117,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_weight="1"
-                android:text="Pounds" />
+                android:text="@string/pounds" />
 
             <RadioButton
                 android:id="@+id/kilo_radio_button"
@@ -125,7 +125,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_weight="1"
-                android:text="Kilos" />
+                android:text="@string/kilos" />
         </RadioGroup>
 
     </android.support.constraint.ConstraintLayout>
@@ -154,7 +154,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/fab_margin"
-                android:hint="Height"
+                android:hint="@string/height"
                 android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
 
@@ -179,7 +179,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_weight="1"
-                android:text="Inches" />
+                android:text="@string/inches" />
 
             <RadioButton
                 android:id="@+id/cm_radio_button"
@@ -187,7 +187,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/fab_margin"
                 android:layout_weight="1"
-                android:text="CM" />
+                android:text="@string/cm" />
         </RadioGroup>
 
     </android.support.constraint.ConstraintLayout>
@@ -210,7 +210,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="8dp"
-            android:text="Activity Level"
+            android:text="@string/activity_level"
             android:textColor="?android:textColorHint"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -240,7 +240,8 @@
         android:layout_marginStart="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
-        android:text="Calculate"
+        android:contentDescription="@string/calculate_calorie_content_description"
+        android:text="@string/calculate"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

@@ -52,7 +52,7 @@
                 android:id="@+id/food_name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Name" />
+                android:hint="@string/name" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -72,7 +72,7 @@
                 android:id="@+id/calories_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Calories" />
+                android:hint="@string/calories" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -92,7 +92,7 @@
                 android:id="@+id/carbs_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Carbs" />
+                android:hint="@string/carbs" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -112,7 +112,7 @@
                 android:id="@+id/protein_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Protein" />
+                android:hint="@string/protein" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -132,7 +132,7 @@
                 android:id="@+id/fat_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Fat" />
+                android:hint="@string/fat" />
         </android.support.design.widget.TextInputLayout>
 
         <Button
@@ -142,10 +142,11 @@
             android:layout_marginStart="@dimen/fab_margin"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:text="Add Custom Food"
+            android:text="@string/add_custom_food"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            android:contentDescription="@string/add_custom_food_content_description"/>
 
     </android.support.constraint.ConstraintLayout>
 </FrameLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="activity_levels">
+        <item>@string/basal_metabolic_rate</item>
+        <item>@string/sedentary</item>
+        <item>@string/lightly_active</item>
+        <item>@string/moderately_active</item>
+        <item>@string/very_active</item>
+        <item>@string/extra_active</item>
+    </string-array>
+</resources>

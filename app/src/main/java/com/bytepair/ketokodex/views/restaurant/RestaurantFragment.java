@@ -192,6 +192,7 @@ public class RestaurantFragment extends Fragment implements DataLoadingInterface
             mFab.setColorFilter(getActivity().getColor(android.R.color.white));
         }
 
+        mFab.setContentDescription(getString(R.string.restaurant_map_fab_content_description));
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

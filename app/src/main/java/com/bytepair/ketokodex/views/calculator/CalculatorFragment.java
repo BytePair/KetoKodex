@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,13 +58,7 @@ public class CalculatorFragment extends Fragment {
     @BindView(R.id.calories_text_view)
     TextView mCaloriesTextView;
 
-    private static final String[] ACTIVITY_LEVELS = {
-            "Basal Metabolic Rate (BMR)",
-            "Sedentary (Little or no exercise)",
-            "Lightly Active (1-3 workouts/week)",
-            "Moderately Active (3-5 workouts/week)",
-            "Very Active (6-7 workouts/week)",
-            "Extra Active (Physical Job and 6-7 workouts/week)"};
+    private String[] mActivityLevels;
     private Unbinder mUnbinder;
 
     public CalculatorFragment() {
@@ -78,6 +71,7 @@ public class CalculatorFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_calculator, container, false);
 
+        mActivityLevels = getResources().getStringArray(R.array.activity_levels);
         mUnbinder = ButterKnife.bind(this, view);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && getActivity() != null) {
             mCalculateButton.getBackground().setColorFilter(getActivity().getColor(R.color.colorPrimary), PorterDuff.Mode.MULTIPLY);
@@ -125,7 +119,7 @@ public class CalculatorFragment extends Fragment {
 
     private void setUpSpinner() {
         ArrayAdapter<String> spinnerAdapter
-                = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, Arrays.asList(ACTIVITY_LEVELS));
+                = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, Arrays.asList(mActivityLevels));
         mActivityLevelSpinner.setAdapter(spinnerAdapter);
     }
 
@@ -197,26 +191,21 @@ public class CalculatorFragment extends Fragment {
         // get age
         Integer age = Integer.valueOf(Objects.requireNonNull(mAgeEditText.getText()).toString());
 
-        // get gender
-        String gender = ((RadioButton) getActivity().findViewById(mGenderRadioGroup.getCheckedRadioButtonId())).getText().toString();
-
         // calculate weight in lbs
         Double weight = Double.valueOf(Objects.requireNonNull(mWeightEditText.getText()).toString());
-        String weightType = ((RadioButton) getActivity().findViewById(mWeightRadioGroup.getCheckedRadioButtonId())).getText().toString();
-        if (weightType.equals("Kilos")) {
+        if (mWeightRadioGroup.getCheckedRadioButtonId() == mWeightRadioGroup.getChildAt(1).getId()) {
             weight /= 2.205;
         }
 
         // calculate height in inches
         Double height = Double.valueOf(Objects.requireNonNull(mHeightEditText.getText()).toString());
-        String heightType = ((RadioButton) getActivity().findViewById(mHeightRadioGroup.getCheckedRadioButtonId())).getText().toString();
-        if (heightType.equals("CM")) {
+        if (mHeightRadioGroup.getCheckedRadioButtonId() == mHeightRadioGroup.getChildAt(1).getId()) {
             weight /= 2.54;
         }
 
         // calculate bmr
         Double bmr;
-        if (gender.equals("Male")) {
+        if (mGenderRadioGroup.getCheckedRadioButtonId() == mGenderRadioGroup.getChildAt(0).getId()) {
             bmr = 66 + (6.23 * weight) + (12.7 * height) - (6.8 * age);
         } else {
             bmr = 66 + (4.35 * weight) + (4.7 * height) - (4.7 * age);
