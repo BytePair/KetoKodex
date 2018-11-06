@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.bytepair.ketokodex.helpers.UpdateLocalFavoritesTask;
 import com.bytepair.ketokodex.models.Favorite;
 import com.bytepair.ketokodex.provider.FavoriteContract;
 import com.bytepair.ketokodex.views.addfood.AddFoodFragment;
@@ -296,9 +297,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void updateFavoritesWidget() {
-        // delete existing favorites
-        getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI, null, null);
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(FAVORITES_KEY)
                 .whereEqualTo(USER_ID_KEY, FirebaseAuth.getInstance().getUid())
@@ -306,21 +304,8 @@ public class MainActivity extends AppCompatActivity
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                // add favorite to local db
-                                Favorite favorite = documentSnapshot.toObject(Favorite.class);
-                                ContentValues contentValues = new ContentValues();
-                                contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_ID, documentSnapshot.getId());
-                                contentValues.put(FavoriteContract.FavoriteEntry.FAVORITE_NAME, favorite.getName());
-                                getContentResolver().insert(FavoriteContract.FavoriteEntry.CONTENT_URI, contentValues);
-                            }
-                        }
-                        // update the widget
-                        AppWidgetManager.getInstance(getApplicationContext()).notifyAppWidgetViewDataChanged(
-                                AppWidgetManager.getInstance(getApplicationContext()).getAppWidgetIds(new ComponentName(getApplicationContext(), FavoritesWidgetProvider.class)),
-                                R.id.widget_list_view
-                        );
+                        UpdateLocalFavoritesTask updateLocalFavoritesTask = new UpdateLocalFavoritesTask(getApplicationContext());
+                        updateLocalFavoritesTask.execute(task);
                     }
                 });
     }
